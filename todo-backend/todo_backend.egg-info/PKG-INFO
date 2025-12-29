@@ -1,0 +1,73 @@
+Metadata-Version: 2.4
+Name: todo-backend
+Version: 0.1.0
+Summary: Full-stack Todo App - Backend API with FastAPI and SQLModel
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.104.0
+Requires-Dist: sqlmodel>=0.0.16
+Requires-Dist: uvicorn[standard]>=0.24.0
+Requires-Dist: pydantic>=2.4.0
+Requires-Dist: python-multipart>=0.0.6
+Requires-Dist: better-exceptions>=0.3.3
+Requires-Dist: alembic>=1.13.0
+Requires-Dist: psycopg2-binary>=2.9.9
+Requires-Dist: python-jose[cryptography]>=3.3.0
+Requires-Dist: passlib[bcrypt]>=1.7.4
+Requires-Dist: python-dotenv>=1.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: httpx>=0.25.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: mypy>=1.5.0; extra == "dev"
+
+# Todo App Backend
+
+This is the backend API for the Todo application, built with FastAPI and SQLModel.
+
+## Features
+
+- User authentication (register/login)
+- Task management (CRUD operations)
+- JWT-based authentication
+- SQLite database (with option to use PostgreSQL)
+
+## Endpoints
+
+### Authentication
+- `POST /auth/register` - Register a new user
+- `POST /auth/login` - Login and get JWT token
+
+### Tasks
+- `GET /tasks` - Get all tasks for the authenticated user
+- `POST /tasks` - Create a new task
+- `GET /tasks/{task_id}` - Get a specific task
+- `PUT /tasks/{task_id}` - Update a specific task
+- `DELETE /tasks/{task_id}` - Delete a specific task
+
+### Health Check
+- `GET /health` - Check API health status
+
+## Setup
+
+1. Install dependencies:
+   ```bash
+   pip install -e .
+   ```
+
+2. Set up environment variables in `.env` file
+
+3. Run the application:
+   ```bash
+   uvicorn main:app --reload
+   ```
+
+## Tech Stack
+
+- FastAPI
+- SQLModel
+- JWT for authentication
+- SQLite (default) or PostgreSQL
+- Passlib for password hashing
+- uvicorn ASGI server
