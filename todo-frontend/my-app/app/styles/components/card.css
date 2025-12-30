@@ -1,0 +1,130 @@
+/* Professional Card Component Styles */
+
+/* Base card styles */
+.card {
+  background-color: #f9fafb; /* Off-white */
+  border: 1px solid #e5e7eb; /* Light Gray */
+  border-radius: 0.5rem; /* 8px */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  padding: 1rem; /* 16px */
+  margin: 1rem 0; /* 16px vertical spacing */
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Card header */
+.card-header {
+  padding: 0 0 1rem 0; /* Bottom padding only */
+  margin-bottom: 1rem; /* 16px space below */
+  border-bottom: 1px solid #e5e7eb; /* Light Gray */
+  font-weight: 600; /* Semibold */
+  color: #1f2937; /* Dark Gray */
+}
+
+/* Card body */
+.card-body {
+  padding: 0;
+}
+
+/* Card footer */
+.card-footer {
+  padding: 1rem 0 0 0; /* Top padding only */
+  margin-top: 1rem; /* 16px space above */
+  border-top: 1px solid #e5e7eb; /* Light Gray */
+}
+
+/* Card title */
+.card-title {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600; /* Semibold */
+  color: #1f2937; /* Dark Gray */
+  margin: 0 0 0.5rem 0; /* Bottom margin only */
+}
+
+/* Card subtitle */
+.card-subtitle {
+  font-size: 0.875rem; /* 14px */
+  color: #6b7280; /* Medium Gray */
+  margin: 0 0 1rem 0; /* Bottom margin only */
+}
+
+/* Card image */
+.card-image {
+  width: 100%;
+  border-radius: 0.5rem 0.5rem 0 0; /* Rounded top corners */
+  margin: 0 0 1rem 0; /* Bottom margin only */
+}
+
+/* Card actions */
+.card-actions {
+  display: flex;
+  gap: 0.5rem; /* 8px */
+  justify-content: flex-end;
+  margin-top: 1rem; /* 16px top margin */
+}
+
+/* Card with different backgrounds */
+.card.primary {
+  background-color: #eff6ff; /* Light blue background */
+  border-color: #3b82f6; /* Professional Blue */
+}
+
+.card.success {
+  background-color: #ecfdf5; /* Light green background */
+  border-color: #10b981; /* Green */
+}
+
+.card.warning {
+  background-color: #fef3c7; /* Light amber background */
+  border-color: #f59e0b; /* Amber */
+}
+
+.card.error {
+  background-color: #fee2e2; /* Light red background */
+  border-color: #ef4444; /* Red */
+}
+
+/* Card with no border */
+.card.flat {
+  border: none;
+  box-shadow: none;
+}
+
+/* Card with no padding */
+.card.compact {
+  padding: 0.5rem; /* 8px */
+}
+
+/* Responsive card */
+@media (max-width: 767px) {
+  .card {
+    padding: 0.5rem; /* Reduced to 8px */
+    margin: 0.5rem 0; /* Reduced to 8px */
+  }
+  
+  .card-actions {
+    flex-direction: column;
+  }
+  
+  .card-actions .btn {
+    width: 100%;
+    margin: 0.25rem 0;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .card {
+    padding: 0.75rem; /* 12px */
+    margin: 0.75rem 0; /* 12px */
+  }
+}
+
+@media (min-width: 1024px) {
+  .card {
+    padding: 1rem; /* 16px */
+    margin: 1rem 0; /* 16px */
+  }
+}

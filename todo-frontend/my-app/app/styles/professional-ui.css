@@ -1,0 +1,80 @@
+/* Professional UI Theme - Main Import File */
+
+/* Import all professional UI components */
+@import './theme.css';
+@import './components/button.css';
+@import './components/form.css';
+@import './components/card.css';
+@import './components/navigation.css';
+@import './components/todo-list.css';
+@import './components/todo-item.css';
+@import './components/todo-form.css';
+@import './utilities/spacing.css';
+@import './utilities/accessibility.css';
+@import './responsive.css';
+
+/* Additional global styles for professional appearance */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Professional container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Typography enhancements */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+/* Common utility classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mb-5 { margin-bottom: 3rem; }
+
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+.mt-5 { margin-top: 3rem; }
+
+/* Focus styles for accessibility */
+*:focus {
+  outline: 2px solid #3b82f6; /* Professional Blue */
+  outline-offset: 2px;
+}
+
+/* Hide focus styles if the user has specified preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+}

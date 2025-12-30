@@ -1,0 +1,138 @@
+/* Professional Input Field Component Styles */
+
+/* Base input styles */
+.form-input,
+.form-textarea,
+.form-select {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem; /* 8px 12px */
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1f2937; /* Dark Gray */
+  background-color: #ffffff; /* White */
+  background-clip: padding-box;
+  border: 1px solid #d1d5db; /* Light Gray */
+  border-radius: 0.375rem; /* 6px */
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  color: #1f2937;
+  background-color: #ffffff;
+  border-color: #3b82f6; /* Professional Blue */
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); /* Professional Blue with opacity */
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: #6b7280; /* Medium Gray */
+  opacity: 1; /* Firefox */
+  font-style: italic;
+}
+
+.form-input:disabled,
+.form-textarea:disabled,
+.form-select:disabled {
+  background-color: #f3f4f6; /* Secondary light */
+  opacity: 1;
+}
+
+/* Textarea specific styles */
+.form-textarea {
+  min-height: 8rem; /* 128px */
+  resize: vertical;
+}
+
+/* Select specific styles */
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-size: 1.5em 1.5em;
+  background-repeat: no-repeat;
+}
+
+/* Error state */
+.form-input.error,
+.form-textarea.error,
+.form-select.error {
+  border-color: #ef4444; /* Red */
+}
+
+.form-input.error:focus,
+.form-textarea.error:focus,
+.form-select.error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1); /* Red with opacity */
+}
+
+/* Success state */
+.form-input.success,
+.form-textarea.success,
+.form-select.success {
+  border-color: #10b981; /* Green */
+}
+
+.form-input.success:focus,
+.form-textarea.success:focus,
+.form-select.success:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); /* Green with opacity */
+}
+
+/* Form group */
+.form-group {
+  margin-bottom: 1rem; /* 16px */
+  width: 100%;
+}
+
+/* Form label */
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem; /* 8px */
+  font-weight: 500; /* Medium */
+  color: #1f2937; /* Dark Gray */
+}
+
+/* Required indicator */
+.form-label.required::after {
+  content: " *";
+  color: #ef4444; /* Red */
+}
+
+/* Error message */
+.form-error {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem; /* 8px */
+  font-size: 0.875rem; /* 14px */
+  color: #ef4444; /* Red */
+}
+
+/* Form row for multiple inputs in one line */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -0.5rem; /* -8px */
+  margin-left: -0.5rem; /* -8px */
+}
+
+.form-row > .form-group {
+  flex: 1 0 0%;
+  padding-right: 0.5rem; /* 8px */
+  padding-left: 0.5rem; /* 8px */
+  margin-bottom: 0;
+}
+
+/* Search input */
+.form-input.search {
+  padding-left: 2.5rem; /* 40px for icon */
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12.096 12.096a7 7 0 111.414-1.414l3.147 3.147m-4.561-4.561l-3.147-3.147'/%3e%3c/svg%3e");
+  background-position: 0.75rem center;
+  background-size: 1rem 1rem;
+  background-repeat: no-repeat;
+}

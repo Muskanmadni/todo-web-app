@@ -1,0 +1,110 @@
+/* Professional Theme - Color Scheme */
+
+/* Primary Colors */
+:root {
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6; /* Professional Blue */
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a; /* Navy Blue */
+}
+
+/* Secondary Colors */
+:root {
+  --color-secondary-50: #f8fafc;
+  --color-secondary-100: #f1f5f9;
+  --color-secondary-200: #e2e8f0; /* Light Gray */
+  --color-secondary-300: #cbd5e1;
+  --color-secondary-400: #94a3b8;
+  --color-secondary-500: #64748b;
+  --color-secondary-600: #475569;
+  --color-secondary-700: #334155;
+  --color-secondary-800: #1e293b;
+  --color-secondary-900: #0f172a;
+}
+
+/* Additional Professional Colors */
+:root {
+  --color-text-primary: #1f2937; /* Dark Gray */
+  --color-text-secondary: #6b7280; /* Medium Gray */
+  --color-success: #10b981; /* Green */
+  --color-error: #ef4444; /* Red */
+  --color-warning: #f59e0b; /* Amber */
+  --color-background-primary: #ffffff; /* White */
+  --color-background-surface: #f9fafb; /* Off-white */
+}
+
+/* Professional theme variables */
+:root {
+  /* Background colors */
+  --bg-primary: var(--color-background-primary);
+  --bg-surface: var(--color-background-surface);
+  --bg-card: var(--color-secondary-50);
+  
+  /* Text colors */
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-on-primary: #ffffff;
+  --text-on-secondary: var(--color-text-primary);
+  
+  /* Component colors */
+  --primary: var(--color-primary-500);
+  --primary-dark: var(--color-primary-700);
+  --primary-light: var(--color-primary-200);
+  --secondary: var(--color-secondary-200);
+  --success: var(--color-success);
+  --error: var(--color-error);
+  --warning: var(--color-warning);
+  
+  /* Border colors */
+  --border: var(--color-secondary-200);
+  --border-light: var(--color-secondary-100);
+  --border-dark: var(--color-secondary-300);
+}
+
+/* Apply theme to body */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Card theme */
+.card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+/* Typography theme */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+p {
+  color: var(--text-secondary);
+}
+
+/* Link theme */
+a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+/* Selection theme */
+::selection {
+  background-color: var(--primary-light);
+  color: var(--text-primary);
+}

@@ -1,0 +1,242 @@
+/* Professional Todo Form Component Styles */
+
+/* Todo form container */
+.todo-form-container {
+  background-color: #f9fafb; /* Off-white */
+  border: 1px solid #e5e7eb; /* Light Gray */
+  border-radius: 0.75rem; /* 12px */
+  padding: 1.5rem; /* 24px */
+  margin-bottom: 2.5rem; /* 40px */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* Todo form header */
+.todo-form-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* 12px */
+  margin-bottom: 1.5rem; /* 24px */
+  padding-bottom: 1rem; /* 16px */
+  border-bottom: 1px solid #e5e7eb; /* Light Gray */
+}
+
+.todo-form-title {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600; /* Semibold */
+  color: #1f2937; /* Dark Gray */
+}
+
+.todo-form-title-icon {
+  padding: 0.5rem; /* 8px */
+  border-radius: 0.5rem; /* 8px */
+  background-color: #eff6ff; /* Light blue background */
+  color: #1e3a8a; /* Navy Blue */
+}
+
+/* Form error message */
+.todo-form-error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* 12px */
+  background-color: #fef2f2; /* Light red */
+  border: 1px solid #fecaca; /* Red border */
+  color: #dc2626; /* Red text */
+  padding: 1rem; /* 16px */
+  border-radius: 0.5rem; /* 8px */
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+.todo-form-error-icon {
+  flex-shrink: 0;
+}
+
+/* Todo form */
+.todo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* 24px */
+}
+
+/* Form row for multiple inputs */
+.todo-form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem; /* 24px */
+}
+
+@media (min-width: 768px) {
+  .todo-form-row {
+    grid-template-columns: 1fr 1fr; /* Two columns on medium screens and up */
+  }
+}
+
+/* Form group */
+.todo-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* 8px */
+}
+
+/* Form label */
+.todo-form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* 8px */
+  font-weight: 500; /* Medium */
+  color: #1f2937; /* Dark Gray */
+  font-size: 0.875rem; /* 14px */
+}
+
+.todo-form-label.required::after {
+  content: " *";
+  color: #ef4444; /* Red */
+}
+
+/* Form input */
+.todo-form-input {
+  padding: 0.75rem 1rem; /* 12px 16px */
+  font-size: 1rem; /* 16px */
+  line-height: 1.5;
+  color: #1f2937; /* Dark Gray */
+  background-color: #ffffff; /* White */
+  background-clip: padding-box;
+  border: 1px solid #d1d5db; /* Light Gray */
+  border-radius: 0.5rem; /* 8px */
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.todo-form-input:focus {
+  color: #1f2937;
+  background-color: #ffffff;
+  border-color: #3b82f6; /* Professional Blue */
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); /* Professional Blue with opacity */
+}
+
+.todo-form-input::placeholder {
+  color: #6b7280; /* Medium Gray */
+  opacity: 1; /* Firefox */
+  font-style: italic;
+}
+
+/* Form textarea */
+.todo-form-textarea {
+  min-height: 8rem; /* 128px */
+  resize: vertical;
+  padding: 0.75rem 1rem; /* 12px 16px */
+  font-size: 1rem; /* 16px */
+  line-height: 1.5;
+  color: #1f2937; /* Dark Gray */
+  background-color: #ffffff; /* White */
+  background-clip: padding-box;
+  border: 1px solid #d1d5db; /* Light Gray */
+  border-radius: 0.5rem; /* 8px */
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.todo-form-textarea:focus {
+  color: #1f2937;
+  background-color: #ffffff;
+  border-color: #3b82f6; /* Professional Blue */
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); /* Professional Blue with opacity */
+}
+
+/* Form select */
+.todo-form-select {
+  padding: 0.75rem 1rem; /* 12px 16px */
+  font-size: 1rem; /* 16px */
+  line-height: 1.5;
+  color: #1f2937; /* Dark Gray */
+  background-color: #ffffff; /* White */
+  background-clip: padding-box;
+  border: 1px solid #d1d5db; /* Light Gray */
+  border-radius: 0.5rem; /* 8px */
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 1rem center;
+  background-size: 1.5em 1.5em;
+  background-repeat: no-repeat;
+}
+
+.todo-form-select:focus {
+  color: #1f2937;
+  background-color: #ffffff;
+  border-color: #3b82f6; /* Professional Blue */
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); /* Professional Blue with opacity */
+}
+
+/* Form submit button */
+.todo-form-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; /* 8px */
+  padding: 0.75rem 1.5rem; /* 12px 24px */
+  border: none;
+  border-radius: 0.5rem; /* 8px */
+  font-size: 1rem; /* 16px */
+  font-weight: 500; /* Medium */
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  background: linear-gradient(to right, #3b82f6, #1e40af); /* Professional Blue gradient */
+  color: white;
+  align-self: flex-start;
+}
+
+.todo-form-submit:hover {
+  background: linear-gradient(to right, #2563eb, #1e3a8a); /* Darker gradient on hover */
+  transform: translateY(-1px);
+}
+
+.todo-form-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Loading state */
+.todo-form-submit.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.todo-form-submit.loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive styles */
+@media (max-width: 767px) {
+  .todo-form-container {
+    padding: 1rem; /* 16px */
+    margin-bottom: 1.5rem; /* 24px */
+  }
+
+  .todo-form-row {
+    grid-template-columns: 1fr; /* Single column on mobile */
+  }
+
+  .todo-form-submit {
+    width: 100%;
+  }
+}

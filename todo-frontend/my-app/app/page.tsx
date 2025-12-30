@@ -22,6 +22,9 @@ import {
   Flag
 } from 'lucide-react';
 
+// Import the professional UI CSS
+import './styles/professional-ui.css';
+
 // Define TypeScript interfaces
 interface User {
   id: string;
@@ -346,194 +349,170 @@ export default function Home() {
   // If not logged in, show auth forms
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-secondary flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="flex justify-end mb-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div className="p-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600">
+              <div className="bg-white rounded-xl p-8">
+                <div className="text-center">
+                  <div className="mx-auto bg-gradient-to-r from-indigo-500 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center">
+                    <CheckCircle className="h-8 w-8 text-white" />
+                  </div>
+                  <h2 className="mt-6 text-2xl font-extrabold text-gray-900">
+                    {isLogin ? 'Welcome Back!' : 'Create Account'}
+                  </h2>
+                  <p className="mt-2 text-sm text-gray-500">
+                    {isLogin ? 'Sign in to continue' : 'Get started with us today'}
+                  </p>
+                </div>
+
+                {error && (
+                  <div className="mt-6 bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <AlertCircle className="h-5 w-5 text-red-400" />
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm text-red-700">{error}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <form className="mt-8 space-y-6" onSubmit={isLogin ? handleLogin : handleRegister}>
+                  {!isLogin && (
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                        Email address
+                      </label>
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                        placeholder="you@example.com"
+                      />
+                    </div>
+                  )}
+
+                  {isLogin && (
+                    <div>
+                      <label htmlFor="login-email" className="block text-sm font-medium text-gray-700 mb-1">
+                        Email address
+                      </label>
+                      <input
+                        id="login-email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        value={loginEmail}
+                        onChange={(e) => setLoginEmail(e.target.value)}
+                        className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                        placeholder="you@example.com"
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                      Password
+                    </label>
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      autoComplete="current-password"
+                      required
+                      value={isLogin ? loginPassword : password}
+                      onChange={(e) => isLogin
+                        ? setLoginPassword(e.target.value)
+                        : setPassword(e.target.value)
+                      }
+                      className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                      placeholder="••••••••"
+                    />
+                  </div>
+
+                  {!isLogin && (
+                    <div>
+                      <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">
+                        Confirm Password
+                      </label>
+                      <input
+                        id="confirm-password"
+                        name="confirm-password"
+                        type="password"
+                        autoComplete="current-password"
+                        required
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                        placeholder="••••••••"
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-1/2 mx-auto flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-75 relative overflow-hidden group"
+                    >
+                      <span className="absolute inset-0 w-full h-full transition-all duration-200 ease-out bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100"></span>
+                      <span className="absolute inset-0 w-full bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-200 ease-out"></span>
+                      {loading ? (
+                        <>
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent mr-2"></div>
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          {isLogin ? (
+                            <>
+                              <Lock className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:rotate-12" />
+                              Sign in
+                            </>
+                          ) : (
+                            <>
+                              <User className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:rotate-12" />
+                              Create account
+                            </>
+                          )}
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+
+                <div className="mt-6 text-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsLogin(!isLogin);
+                      setError(null);
+                    }}
+                    className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                  >
+                    {isLogin ? "Don't have an account? Register" : "Already have an account? Sign in"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-center">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full bg-secondary text-foreground hover:bg-accent transition-colors"
+              className="p-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
-          </div>
-
-          <div className="text-center">
-            <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <CheckCircle className="h-6 w-6 text-primary" />
-            </div>
-            <h2 className="mt-6 text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h2>
-            <p className="mt-2 text-sm text-foreground/70">
-              {isLogin ? 'Sign in to your account' : 'Get started with your todo list'}
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-card p-8 shadow-xl rounded-2xl border border-border/50 backdrop-blur-sm">
-            {error && (
-              <div className="mb-6 flex items-center gap-3 bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-xl" role="alert">
-                <AlertCircle className="h-5 w-5 flex-shrink-0" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            <form className="space-y-6" onSubmit={isLogin ? handleLogin : handleRegister}>
-              {!isLogin && (
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
-                    Email address
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-foreground/50" />
-                    </div>
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-secondary/50 border border-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-foreground/50"
-                      placeholder="your@email.com"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {isLogin && (
-                <div>
-                  <label htmlFor="login-email" className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
-                    Email address
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-foreground/50" />
-                    </div>
-                    <input
-                      id="login-email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      value={loginEmail}
-                      onChange={(e) => setLoginEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-secondary/50 border border-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-foreground/50"
-                      placeholder="your@email.com"
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                  <Lock className="h-4 w-4" />
-                  Password
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-foreground/50" />
-                  </div>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    value={isLogin ? loginPassword : password}
-                    onChange={(e) => isLogin
-                      ? setLoginPassword(e.target.value)
-                      : setPassword(e.target.value)
-                    }
-                    className="w-full pl-10 pr-4 py-3 bg-secondary/50 border border-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-foreground/50"
-                    placeholder="••••••••"
-                  />
-                </div>
-              </div>
-
-              {!isLogin && (
-                <div>
-                  <label htmlFor="confirm-password" className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                    <Lock className="h-4 w-4" />
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-foreground/50" />
-                    </div>
-                    <input
-                      id="confirm-password"
-                      name="confirm-password"
-                      type="password"
-                      autoComplete="current-password"
-                      required
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-secondary/50 border border-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-foreground/50"
-                      placeholder="••••••••"
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-base font-medium text-primary-foreground bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-all duration-200"
-                >
-                  {loading ? (
-                    <>
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      {isLogin ? (
-                        <>
-                          <Lock className="h-5 w-5" />
-                          Sign in
-                        </>
-                      ) : (
-                        <>
-                          <User className="h-5 w-5" />
-                          Register
-                        </>
-                      )}
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-
-            <div className="mt-6 text-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setError(null);
-                }}
-                className="text-primary hover:text-primary/90 font-medium flex items-center justify-center gap-2"
-              >
-                {isLogin ? (
-                  <>
-                    Don't have an account?
-                    <span className="underline">Register</span>
-                  </>
-                ) : (
-                  <>
-                    Already have an account?
-                    <span className="underline">Sign in</span>
-                  </>
-                )}
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -542,29 +521,29 @@ export default function Home() {
 
   // If logged in, show the task management interface
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
-      <header className="bg-card/80 backdrop-blur-md border-b border-border sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary/10">
+    <div className="min-h-screen">
+      <header className="nav-header">
+        <div className="nav-container">
+          <div className="nav-brand">
+            <div className="nav-brand-icon">
               <CheckCircle className="h-6 w-6 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
+            <h1 className="nav-brand-title">
               Todo App
             </h1>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="nav-actions">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full bg-secondary text-foreground hover:bg-accent transition-colors"
+              className="nav-action-button"
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 py-2 px-4 bg-destructive text-destructive-foreground rounded-xl hover:bg-destructive/90 transition-colors"
+              className="nav-button secondary"
             >
               <LogOut className="h-4 w-4" />
               Logout
@@ -573,29 +552,29 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div className="bg-card/80 backdrop-blur-sm rounded-2xl shadow-xl border border-border/50 p-6">
+      <main className="container mt-8">
+        <div className="todo-form-container">
           {/* Task Creation Form */}
           <div className="mb-10">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 rounded-lg bg-primary/10">
+            <div className="todo-form-header">
+              <div className="todo-form-title-icon">
                 <Plus className="h-5 w-5 text-primary" />
               </div>
-              <h2 className="text-xl font-semibold text-foreground">Create New Task</h2>
+              <h2 className="todo-form-title">Create New Task</h2>
             </div>
 
             {error && (
-              <div className="mb-6 flex items-center gap-3 bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-xl" role="alert">
-                <AlertCircle className="h-5 w-5 flex-shrink-0" />
+              <div className="todo-form-error" role="alert">
+                <AlertCircle className="todo-form-error-icon" />
                 <span>{error}</span>
               </div>
             )}
 
-            <form onSubmit={handleCreateTask} className="space-y-6">
-              <div>
-                <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                  <Edit3 className="h-4 w-4" />
-                  Title *
+            <form onSubmit={handleCreateTask} className="todo-form">
+              <div className="todo-form-group">
+                <label htmlFor="title" className="todo-form-label required">
+                  <Edit3 />
+                  Title
                 </label>
                 <input
                   type="text"
@@ -603,37 +582,37 @@ export default function Home() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
-                  className="w-full px-4 py-3 bg-secondary/50 border border-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-foreground/50"
+                  className="todo-form-input"
                   placeholder="What needs to be done?"
                 />
               </div>
 
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                  <Edit3 className="h-4 w-4" />
+              <div className="todo-form-group">
+                <label htmlFor="description" className="todo-form-label">
+                  <Edit3 />
                   Description
                 </label>
                 <textarea
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-4 py-3 bg-secondary/50 border border-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-foreground/50"
+                  className="todo-form-textarea"
                   placeholder="Add details about the task (optional)"
                   rows={3}
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="priority" className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                    <Flag className="h-4 w-4" />
+              <div className="todo-form-row">
+                <div className="todo-form-group">
+                  <label htmlFor="priority" className="todo-form-label">
+                    <Flag />
                     Priority
                   </label>
                   <select
                     id="priority"
                     value={priority}
                     onChange={(e) => setPriority(e.target.value as 'low' | 'medium' | 'high')}
-                    className="w-full px-4 py-3 bg-secondary/50 border border-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
+                    className="todo-form-select"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -641,9 +620,9 @@ export default function Home() {
                   </select>
                 </div>
 
-                <div>
-                  <label htmlFor="due-date" className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
+                <div className="todo-form-group">
+                  <label htmlFor="due-date" className="todo-form-label">
+                    <Calendar />
                     Due Date (optional)
                   </label>
                   <input
@@ -651,7 +630,7 @@ export default function Home() {
                     id="due-date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full px-4 py-3 bg-secondary/50 border border-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
+                    className="todo-form-input"
                   />
                 </div>
               </div>
@@ -659,7 +638,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center justify-center gap-2 px-6 py-3 border border-transparent text-base font-medium rounded-xl shadow-sm text-primary-foreground bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-all duration-200"
+                className="todo-form-submit"
               >
                 {loading ? (
                   <>
@@ -668,7 +647,7 @@ export default function Home() {
                   </>
                 ) : (
                   <>
-                    <Plus className="h-5 w-5" />
+                    <Plus />
                     Create Task
                   </>
                 )}
@@ -677,8 +656,8 @@ export default function Home() {
           </div>
 
           {/* Task List */}
-          <div>
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <div className="todo-list-container">
+            <div className="todo-list-header">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-primary/10">
                   <CheckCircle className="h-5 w-5 text-primary" />
@@ -686,97 +665,81 @@ export default function Home() {
                 <h2 className="text-xl font-semibold text-foreground">Your Tasks</h2>
               </div>
 
-              <div className="text-sm text-foreground/70 bg-secondary/50 px-4 py-2 rounded-xl">
+              <div className="todo-list-count">
                 {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
               </div>
             </div>
 
             {tasks.length === 0 ? (
-              <div className="text-center py-16">
-                <div className="mx-auto h-24 w-24 rounded-full bg-secondary/50 flex items-center justify-center mb-6">
+              <div className="todo-list-empty">
+                <div className="todo-list-empty-icon">
                   <CheckCircle className="h-12 w-12 text-primary/50" />
                 </div>
-                <h3 className="text-lg font-medium text-foreground mb-2">No tasks yet</h3>
-                <p className="text-foreground/70 max-w-md mx-auto">
+                <h3 className="todo-list-empty-title">No tasks yet</h3>
+                <p className="todo-list-empty-description">
                   Get started by creating your first task. Your tasks will appear here once you create them.
                 </p>
               </div>
             ) : (
-              <ul className="space-y-4">
+              <ul className="todo-list">
                 {tasks.map((task) => (
                   <li
                     key={task.id}
-                    className={`p-5 border rounded-2xl shadow-sm transition-all duration-200 ${
-                      task.completed
-                        ? 'bg-secondary/30 border-secondary/50'
-                        : 'bg-card border-border hover:border-primary/30'
-                    }`}
+                    className="todo-item"
                   >
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-start space-x-4 flex-1 min-w-0">
+                    <div className="todo-item-content">
+                      <div className="todo-item-checkbox">
                         <button
                           onClick={() => toggleTaskCompletion(task.id, task.completed)}
-                          className={`mt-1 flex-shrink-0 h-6 w-6 rounded-full border-2 flex items-center justify-center ${
-                            task.completed
-                              ? 'bg-primary border-primary text-primary-foreground'
-                              : 'border-input hover:border-primary'
-                          }`}
+                          className={`todo-item-checkbox-btn ${task.completed ? 'checked' : ''}`}
                           aria-label={task.completed ? "Mark as incomplete" : "Mark as complete"}
                         >
-                          {task.completed && <Check className="h-4 w-4" />}
+                          <Check />
                         </button>
+                      </div>
 
-                        <div className="flex-1 min-w-0">
-                          <h3 className={`text-lg font-medium truncate ${
-                            task.completed
-                              ? 'line-through text-foreground/50'
-                              : 'text-foreground'
+                      <div className="todo-item-details">
+                        <h3 className={`todo-item-title ${
+                          task.completed ? 'completed' : ''
+                        }`}>
+                          {task.title}
+                        </h3>
+                        {task.description && (
+                          <p className={`todo-item-description ${
+                            task.completed ? 'completed' : ''
                           }`}>
-                            {task.title}
-                          </h3>
-                          {task.description && (
-                            <p className={`mt-2 text-foreground/70 ${
-                              task.completed
-                                ? 'line-through'
-                                : ''
-                            }`}>
-                              {task.description}
-                            </p>
+                            {task.description}
+                          </p>
+                        )}
+
+                        <div className="todo-item-meta">
+                          <span className={`todo-item-priority ${task.priority}`}>
+                            <Flag />
+                            {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+                          </span>
+
+                          {task.due_date && (
+                            <span className="todo-item-due-date">
+                              <Calendar />
+                              {new Date(task.due_date).toLocaleDateString()}
+                            </span>
                           )}
 
-                          <div className="mt-4 flex flex-wrap items-center gap-3">
-                            <span className={`inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full ${
-                              task.priority === 'high'
-                                ? 'bg-destructive/20 text-destructive'
-                                : task.priority === 'medium'
-                                  ? 'bg-amber-500/20 text-amber-500'
-                                  : 'bg-emerald-500/20 text-emerald-500'
-                            }`}>
-                              <Flag className="h-3 w-3" />
-                              {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
-                            </span>
-
-                            {task.due_date && (
-                              <span className="inline-flex items-center gap-1 text-xs text-foreground/70 bg-secondary/50 px-3 py-1 rounded-full">
-                                <Calendar className="h-3 w-3" />
-                                {new Date(task.due_date).toLocaleDateString()}
-                              </span>
-                            )}
-
-                            <span className="text-xs text-foreground/50">
-                              {new Date(task.created_at).toLocaleDateString()}
-                            </span>
-                          </div>
+                          <span className="todo-item-created-date">
+                            {new Date(task.created_at).toLocaleDateString()}
+                          </span>
                         </div>
                       </div>
 
-                      <button
-                        onClick={() => deleteTask(task.id)}
-                        className="text-destructive hover:text-destructive/90 p-2 rounded-full hover:bg-destructive/10 transition-colors flex-shrink-0 ml-4"
-                        aria-label="Delete task"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
+                      <div className="todo-item-actions">
+                        <button
+                          onClick={() => deleteTask(task.id)}
+                          className="todo-item-action-btn delete"
+                          aria-label="Delete task"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      </div>
                     </div>
                   </li>
                 ))}

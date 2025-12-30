@@ -1,0 +1,294 @@
+/* Professional Todo List Component Styles */
+
+/* Todo list container */
+.todo-list-container {
+  background-color: #f9fafb; /* Off-white */
+  border: 1px solid #e5e7eb; /* Light Gray */
+  border-radius: 0.75rem; /* 12px */
+  padding: 1.5rem; /* 24px */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* Todo list header */
+.todo-list-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem; /* 24px */
+  padding-bottom: 1rem; /* 16px */
+  border-bottom: 1px solid #e5e7eb; /* Light Gray */
+}
+
+.todo-list-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* 12px */
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600; /* Semibold */
+  color: #1f2937; /* Dark Gray */
+}
+
+.todo-list-title-icon {
+  padding: 0.5rem; /* 8px */
+  border-radius: 0.5rem; /* 8px */
+  background-color: #eff6ff; /* Light blue background */
+  color: #1e3a8a; /* Navy Blue */
+}
+
+.todo-list-count {
+  font-size: 0.875rem; /* 14px */
+  color: #6b7280; /* Medium Gray */
+}
+
+/* Empty state */
+.todo-list-empty {
+  text-align: center;
+  padding: 4rem 1rem; /* 64px 16px */
+}
+
+.todo-list-empty-icon {
+  margin: 0 auto 1.5rem; /* 0 auto 24px */
+  width: 6rem; /* 96px */
+  height: 6rem; /* 96px */
+  border-radius: 50%;
+  background-color: #f3f4f6; /* Secondary light */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+.todo-list-empty-icon svg {
+  width: 3rem; /* 48px */
+  height: 3rem; /* 48px */
+  color: #9ca3af; /* Gray */
+}
+
+.todo-list-empty-title {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 500; /* Medium */
+  color: #1f2937; /* Dark Gray */
+  margin-bottom: 0.5rem; /* 8px */
+}
+
+.todo-list-empty-description {
+  color: #6b7280; /* Medium Gray */
+  max-width: 24rem; /* 384px */
+  margin: 0 auto;
+}
+
+/* Todo list */
+.todo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* 16px */
+}
+
+/* Todo item */
+.todo-item {
+  padding: 1.25rem; /* 20px */
+  border: 1px solid #e5e7eb; /* Light Gray */
+  border-radius: 0.75rem; /* 12px */
+  transition: all 0.2s ease-in-out;
+  background-color: #ffffff; /* White */
+}
+
+.todo-item:hover {
+  border-color: #d1d5db; /* Medium Gray */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.todo-item.completed {
+  background-color: #f3f4f6; /* Secondary light */
+  border-color: #e5e7eb; /* Light Gray */
+}
+
+.todo-item.completed .todo-item-title {
+  text-decoration: line-through;
+  color: #9ca3af; /* Gray */
+}
+
+.todo-item.completed .todo-item-description {
+  text-decoration: line-through;
+  color: #9ca3af; /* Gray */
+}
+
+/* Todo item content */
+.todo-item-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem; /* 16px */
+}
+
+/* Todo item checkbox */
+.todo-item-checkbox {
+  margin-top: 0.25rem; /* 4px */
+  flex-shrink: 0;
+}
+
+.todo-item-checkbox-btn {
+  width: 1.5rem; /* 24px */
+  height: 1.5rem; /* 24px */
+  border: 2px solid #d1d5db; /* Light Gray */
+  border-radius: 0.25rem; /* 4px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  background-color: #ffffff; /* White */
+}
+
+.todo-item-checkbox-btn:hover {
+  border-color: #3b82f6; /* Professional Blue */
+}
+
+.todo-item-checkbox-btn.checked {
+  background-color: #3b82f6; /* Professional Blue */
+  border-color: #3b82f6; /* Professional Blue */
+}
+
+.todo-item-checkbox-btn.checked svg {
+  display: block;
+}
+
+.todo-item-checkbox-btn svg {
+  display: none;
+  width: 0.75rem; /* 12px */
+  height: 0.75rem; /* 12px */
+  color: #ffffff; /* White */
+}
+
+/* Todo item details */
+.todo-item-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.todo-item-title {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 500; /* Medium */
+  color: #1f2937; /* Dark Gray */
+  margin-bottom: 0.5rem; /* 8px */
+  word-break: break-word;
+}
+
+.todo-item-description {
+  color: #6b7280; /* Medium Gray */
+  margin-bottom: 1rem; /* 16px */
+  word-break: break-word;
+}
+
+/* Todo item metadata */
+.todo-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem; /* 12px */
+  margin-bottom: 1rem; /* 16px */
+}
+
+.todo-item-priority {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem; /* 4px */
+  padding: 0.25rem 0.75rem; /* 4px 12px */
+  font-size: 0.75rem; /* 12px */
+  font-weight: 500; /* Medium */
+  border-radius: 9999px; /* Pill shape */
+}
+
+.todo-item-priority.high {
+  background-color: #fee2e2; /* Light red */
+  color: #dc2626; /* Red */
+}
+
+.todo-item-priority.medium {
+  background-color: #fef3c7; /* Light amber */
+  color: #d97706; /* Amber */
+}
+
+.todo-item-priority.low {
+  background-color: #dcfce7; /* Light green */
+  color: #16a34a; /* Green */
+}
+
+.todo-item-due-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem; /* 4px */
+  padding: 0.25rem 0.75rem; /* 4px 12px */
+  font-size: 0.75rem; /* 12px */
+  color: #6b7280; /* Medium Gray */
+  background-color: #f3f4f6; /* Secondary light */
+  border-radius: 9999px; /* Pill shape */
+}
+
+.todo-item-created-date {
+  font-size: 0.75rem; /* 12px */
+  color: #9ca3af; /* Gray */
+}
+
+/* Todo item actions */
+.todo-item-actions {
+  display: flex;
+  gap: 0.5rem; /* 8px */
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.todo-item-action-btn {
+  padding: 0.5rem; /* 8px */
+  border-radius: 0.375rem; /* 6px */
+  background-color: #f3f4f6; /* Secondary light */
+  color: #1f2937; /* Dark Gray */
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease-in-out;
+}
+
+.todo-item-action-btn:hover {
+  background-color: #e5e7eb; /* Lighter gray */
+}
+
+.todo-item-action-btn.delete {
+  color: #ef4444; /* Red */
+}
+
+.todo-item-action-btn.delete:hover {
+  background-color: #fee2e2; /* Light red */
+}
+
+/* Responsive styles */
+@media (max-width: 767px) {
+  .todo-list-container {
+    padding: 1rem; /* 16px */
+  }
+
+  .todo-item-content {
+    flex-direction: column;
+    gap: 1rem; /* 16px */
+  }
+
+  .todo-item-actions {
+    align-self: flex-end;
+  }
+
+  .todo-list-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem; /* 8px */
+  }
+
+  .todo-list-count {
+    align-self: flex-end;
+  }
+}
