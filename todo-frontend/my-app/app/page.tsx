@@ -112,7 +112,7 @@ export default function Home() {
       const token = localStorage.getItem('access_token');
       if (!token) return;
 
-      const response = await fetch('http://localhost:8000/health', {
+      const response = await fetch('https://todo-web-app-nvu7.onrender.com/health', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -124,7 +124,7 @@ export default function Home() {
       }
 
       // Fetch user tasks
-      const tasksResponse = await fetch('http://localhost:8000/tasks', {
+      const tasksResponse = await fetch('https://todo-web-app-nvu7.onrender.com/tasks', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ export default function Home() {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/auth/register', {
+      const response = await fetch('https://todo-web-app-nvu7.onrender.com/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8000/auth/login', {
+      const response = await fetch('https://todo-web-app-nvu7.onrender.com/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -230,7 +230,7 @@ export default function Home() {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch('http://localhost:8000/tasks', {
+      const response = await fetch('https://todo-web-app-nvu7.onrender.com/tasks', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -269,7 +269,7 @@ export default function Home() {
       const token = localStorage.getItem('access_token');
       if (!token) return;
 
-      const response = await fetch(`http://localhost:8000/tasks/${taskId}`, {
+      const response = await fetch(`https://todo-web-app-nvu7.onrender.com/tasks/${taskId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -303,7 +303,7 @@ export default function Home() {
       const token = localStorage.getItem('access_token');
       if (!token) return;
 
-      const response = await fetch(`http://localhost:8000/tasks/${taskId}`, {
+      const response = await fetch(`https://todo-web-app-nvu7.onrender.com/tasks/${taskId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
