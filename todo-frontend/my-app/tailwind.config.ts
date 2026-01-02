@@ -45,9 +45,8 @@ export default {
         background: {
           primary: '#ffffff', // White
           surface: '#f9fafb', // Off-white
+          DEFAULT: 'var(--background)', // Keep original variable for compatibility
         },
-        // Keep original variables for compatibility
-        background: 'var(--background)',
         foreground: 'var(--foreground)',
         card: 'var(--card)',
         'card-foreground': 'var(--card-foreground)',
