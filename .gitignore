@@ -57,6 +57,19 @@ todo-frontend/out/
 todo-frontend/.env.local
 todo-frontend/public/next.html
 
+# Todo Chatbot Frontend
+todo-chatbot-frontend/node_modules/
+todo-chatbot-frontend/dist/
+todo-chatbot-frontend/build/
+todo-chatbot-frontend/.env*
+todo-chatbot-frontend/.vite/
+todo-chatbot-frontend/.vercel/
+todo-chatbot-frontend/.nyc_output/
+todo-chatbot-frontend/coverage/
+todo-chatbot-frontend/nyc_output/
+todo-chatbot-frontend/.npm/
+todo-chatbot-frontend/.cache/
+
 # Console app
 console-todo-app/__pycache__/
 console-todo-app/venv/
