@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { ChatRequest } from '../../../lib/types';
+import { ChatRequest } from '@/lib/types';
 
 // Define the types for our API
 type ChatRequestBody = ChatRequest;
