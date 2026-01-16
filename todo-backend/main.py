@@ -12,12 +12,20 @@ from dotenv import load_dotenv
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from fastapi.middleware.cors import CORSMiddleware
+from api.chatbot import router as chatbot_router
+
+# Import models from models directory
+from models.user import User as UserModel
+from models.todo import Todo as TodoModel
+from models.conversation import Conversation as ConversationModel
+from models.message import Message as MessageModel
 
 # Load environment variables
 load_dotenv()
 
 # Configuration
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://neondb_owner:npg_ywfK5ROea2kh@ep-hidden-paper-adebc1e9-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
+# Use SQLite for development if no DATABASE_URL is provided, otherwise use PostgreSQL
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./todo_chatbot_dev.db")
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -41,12 +49,7 @@ app.add_middleware(
 )
 
 # Database setup
-# Use connect_args for PostgreSQL compatibility
-connect_args = {}
-if DATABASE_URL.startswith("postgresql"):
-    connect_args = {"connect_timeout": 10}
-
-engine = create_engine(DATABASE_URL, echo=True, connect_args=connect_args)
+from database import engine, get_session  # Import engine from centralized database module
 
 # Models
 class PriorityEnum(str, Enum):
@@ -57,14 +60,6 @@ class PriorityEnum(str, Enum):
 class UserBase(SQLModel):
     email: str = Field(unique=True, index=True)
 
-class User(UserBase, table=True):
-    __tablename__ = "users"
-
-    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    email: str = Field(unique=True, index=True)
-    password_hash: str
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 class UserCreate(UserBase):
     password: str
@@ -143,7 +138,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(token: HTTPAuthorizationCredentials = Depends(oauth2_scheme)) -> User:
+async def get_current_user(token: HTTPAuthorizationCredentials = Depends(oauth2_scheme)) -> UserModel:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -160,14 +155,14 @@ async def get_current_user(token: HTTPAuthorizationCredentials = Depends(oauth2_
         raise credentials_exception
 
     with Session(engine) as session:
-        user = session.exec(select(User).where(User.id == user_id_uuid)).first()
+        user = session.exec(select(UserModel).where(UserModel.id == user_id_uuid)).first()
         if user is None:
             raise credentials_exception
         return user
 
-def authenticate_user(email: str, password: str) -> Optional[User]:
+def authenticate_user(email: str, password: str) -> Optional[UserModel]:
     with Session(engine) as session:
-        user = session.exec(select(User).where(User.email == email)).first()
+        user = session.exec(select(UserModel).where(UserModel.email == email)).first()
         if not user or not verify_password(password, user.password_hash):
             return None
         return user
@@ -182,7 +177,7 @@ def on_startup():
 def register(user: UserCreate):
     with Session(engine) as session:
         # Check if user already exists
-        existing_user = session.exec(select(User).where(User.email == user.email)).first()
+        existing_user = session.exec(select(UserModel).where(UserModel.email == user.email)).first()
         if existing_user:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
@@ -191,7 +186,7 @@ def register(user: UserCreate):
 
         # Create new user
         hashed_password = get_password_hash(user.password)
-        db_user = User(email=user.email, password_hash=hashed_password)
+        db_user = UserModel(email=user.email, password_hash=hashed_password)
         session.add(db_user)
         session.commit()
         session.refresh(db_user)
@@ -215,69 +210,131 @@ def login(user_credentials: UserLogin):
 
 # Task endpoints
 @app.get("/tasks", response_model=List[TaskResponse])
-def get_tasks(current_user: User = Depends(get_current_user)):
+def get_tasks(current_user: UserModel = Depends(get_current_user)):
     with Session(engine) as session:
         tasks = session.exec(
-            select(Task).where(Task.user_id == current_user.id)
+            select(TodoModel).where(TodoModel.user_id == current_user.id)
         ).all()
-        return tasks
+        # Convert TodoModel instances to match TaskResponse format
+        task_responses = []
+        for todo in tasks:
+            task_response = TaskResponse(
+                id=todo.id,
+                title=todo.title,
+                description=todo.description,
+                completed=todo.status == "completed",
+                due_date=todo.completed_at,
+                priority=PriorityEnum.medium,  # Default priority
+                user_id=todo.user_id,
+                created_at=todo.created_at,
+                updated_at=todo.created_at  # Using created_at as updated_at for now
+            )
+            task_responses.append(task_response)
+        return task_responses
 
 @app.post("/tasks", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
-def create_task(task: TaskCreate, current_user: User = Depends(get_current_user)):
+def create_task(task: TaskCreate, current_user: UserModel = Depends(get_current_user)):
     with Session(engine) as session:
-        db_task = Task(
-            **task.dict(),
-            user_id=current_user.id
+        db_task = TodoModel(
+            title=task.title,
+            description=task.description,
+            user_id=current_user.id,
+            status="pending"  # Default status
         )
         session.add(db_task)
         session.commit()
         session.refresh(db_task)
-        return db_task
+
+        # Convert to TaskResponse format
+        task_response = TaskResponse(
+            id=db_task.id,
+            title=db_task.title,
+            description=db_task.description,
+            completed=db_task.status == "completed",
+            due_date=db_task.completed_at,
+            priority=PriorityEnum.medium,  # Default priority
+            user_id=db_task.user_id,
+            created_at=db_task.created_at,
+            updated_at=db_task.created_at  # Using created_at as updated_at for now
+        )
+        return task_response
 
 @app.get("/tasks/{task_id}", response_model=TaskResponse)
-def get_task(task_id: uuid.UUID, current_user: User = Depends(get_current_user)):
+def get_task(task_id: uuid.UUID, current_user: UserModel = Depends(get_current_user)):
     with Session(engine) as session:
-        task = session.exec(
-            select(Task).where(Task.id == task_id, Task.user_id == current_user.id)
+        todo = session.exec(
+            select(TodoModel).where(TodoModel.id == task_id, TodoModel.user_id == current_user.id)
         ).first()
-        if not task:
+        if not todo:
             raise HTTPException(status_code=404, detail="Task not found")
-        return task
+
+        # Convert to TaskResponse format
+        task_response = TaskResponse(
+            id=todo.id,
+            title=todo.title,
+            description=todo.description,
+            completed=todo.status == "completed",
+            due_date=todo.completed_at,
+            priority=PriorityEnum.medium,  # Default priority
+            user_id=todo.user_id,
+            created_at=todo.created_at,
+            updated_at=todo.created_at  # Using created_at as updated_at for now
+        )
+        return task_response
 
 @app.put("/tasks/{task_id}", response_model=TaskResponse)
-def update_task(task_id: uuid.UUID, task_update: TaskUpdate, current_user: User = Depends(get_current_user)):
+def update_task(task_id: uuid.UUID, task_update: TaskUpdate, current_user: UserModel = Depends(get_current_user)):
     with Session(engine) as session:
-        db_task = session.exec(
-            select(Task).where(Task.id == task_id, Task.user_id == current_user.id)
+        db_todo = session.exec(
+            select(TodoModel).where(TodoModel.id == task_id, TodoModel.user_id == current_user.id)
         ).first()
 
-        if not db_task:
+        if not db_todo:
             raise HTTPException(status_code=404, detail="Task not found")
 
         # Update only provided fields
         update_data = task_update.dict(exclude_unset=True)
         for field, value in update_data.items():
-            setattr(db_task, field, value)
+            if field == "completed":
+                # Map completed flag to status
+                db_todo.status = "completed" if value else "pending"
+            elif hasattr(db_todo, field):
+                setattr(db_todo, field, value)
 
-        db_task.updated_at = datetime.utcnow()
-        session.add(db_task)
+        session.add(db_todo)
         session.commit()
-        session.refresh(db_task)
-        return db_task
+        session.refresh(db_todo)
+
+        # Convert to TaskResponse format
+        task_response = TaskResponse(
+            id=db_todo.id,
+            title=db_todo.title,
+            description=db_todo.description,
+            completed=db_todo.status == "completed",
+            due_date=db_todo.completed_at,
+            priority=PriorityEnum.medium,  # Default priority
+            user_id=db_todo.user_id,
+            created_at=db_todo.created_at,
+            updated_at=db_todo.created_at  # Using created_at as updated_at for now
+        )
+        return task_response
 
 @app.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_task(task_id: uuid.UUID, current_user: User = Depends(get_current_user)):
+def delete_task(task_id: uuid.UUID, current_user: UserModel = Depends(get_current_user)):
     with Session(engine) as session:
-        task = session.exec(
-            select(Task).where(Task.id == task_id, Task.user_id == current_user.id)
+        todo = session.exec(
+            select(TodoModel).where(TodoModel.id == task_id, TodoModel.user_id == current_user.id)
         ).first()
 
-        if not task:
+        if not todo:
             raise HTTPException(status_code=404, detail="Task not found")
 
-        session.delete(task)
+        session.delete(todo)
         session.commit()
         return
+
+# Include chatbot router
+app.include_router(chatbot_router, prefix="", tags=["chat"])
 
 # Health check endpoint
 @app.get("/health")

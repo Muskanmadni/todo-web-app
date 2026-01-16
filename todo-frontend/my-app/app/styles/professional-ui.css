@@ -2,6 +2,7 @@
 
 /* Import all professional UI components */
 @import './theme.css';
+@import './neon-theme.css';
 @import './components/button.css';
 @import './components/form.css';
 @import './components/card.css';

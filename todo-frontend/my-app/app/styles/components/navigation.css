@@ -233,3 +233,92 @@
   background-color: #475569; /* Slightly lighter on hover */
   color: #60a5fa; /* Light blue on hover */
 }
+
+/* Neon theme navigation styles */
+.neon-theme .nav-header {
+  background: linear-gradient(to right, #0a0a0a, #111111);
+  border-bottom: 1px solid var(--neon-border-neon);
+  box-shadow: 0 0 10px rgba(0, 102, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.neon-theme .nav-header::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg,
+    var(--neon-blue),
+    var(--neon-purple),
+    var(--neon-pink),
+    var(--neon-blue));
+  border-radius: calc(0.5rem + 2px);
+  z-index: -1;
+  animation: neon-border 3s linear infinite;
+  background-size: 300% 300%;
+}
+
+.neon-theme .nav-brand-title {
+  background: linear-gradient(to right, var(--neon-cyan), var(--neon-blue), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+.neon-theme .nav-link {
+  color: var(--neon-text-secondary);
+  position: relative;
+}
+
+.neon-theme .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
+  transition: width 0.3s ease;
+}
+
+.neon-theme .nav-link:hover::after {
+  width: 100%;
+}
+
+.neon-theme .nav-link:hover {
+  color: var(--neon-cyan);
+}
+
+.neon-theme .nav-link.active {
+  color: var(--neon-cyan);
+}
+
+.neon-theme .nav-action-button {
+  background-color: var(--neon-bg-accent);
+  color: var(--neon-text-primary);
+  border: 1px solid var(--neon-border);
+}
+
+.neon-theme .nav-action-button:hover {
+  background-color: var(--neon-bg-surface);
+  border-color: var(--neon-primary);
+  box-shadow: 0 0 10px rgba(0, 102, 255, 0.3);
+  color: var(--neon-cyan);
+}
+
+.neon-theme .nav-button.secondary {
+  background-color: var(--neon-bg-accent);
+  color: var(--neon-text-primary);
+  border: 1px solid var(--neon-border);
+}
+
+.neon-theme .nav-button.secondary:hover {
+  background-color: var(--neon-bg-surface);
+  border-color: var(--neon-primary);
+  box-shadow: 0 0 10px rgba(0, 102, 255, 0.3);
+  color: var(--neon-cyan);
+}

@@ -7,6 +7,8 @@
   border-radius: 0.75rem; /* 12px */
   padding: 1.5rem; /* 24px */
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
 }
 
 /* Todo list header */
@@ -291,4 +293,66 @@
   .todo-list-count {
     align-self: flex-end;
   }
+}
+
+/* Neon theme todo list styles */
+.neon-theme .todo-list-container {
+  background-color: var(--neon-bg-card);
+  border: 1px solid var(--neon-border);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.neon-theme .todo-list-container::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg,
+    var(--neon-blue),
+    var(--neon-purple),
+    var(--neon-pink),
+    var(--neon-blue));
+  border-radius: calc(0.75rem + 2px);
+  z-index: -1;
+  animation: neon-border 3s linear infinite;
+  background-size: 300% 300%;
+}
+
+.neon-theme .todo-list-header {
+  border-bottom: 1px solid var(--neon-border-light);
+}
+
+.neon-theme .todo-list-title {
+  color: var(--neon-text-primary);
+}
+
+.neon-theme .todo-list-title-icon {
+  background-color: var(--neon-bg-accent);
+  color: var(--neon-primary);
+}
+
+.neon-theme .todo-list-count {
+  color: var(--neon-text-secondary);
+}
+
+.neon-theme .todo-list-empty-icon {
+  background-color: var(--neon-bg-accent);
+}
+
+.neon-theme .todo-list-empty-icon svg {
+  color: var(--neon-text-secondary);
+}
+
+.neon-theme .todo-list-empty-title {
+  color: var(--neon-text-primary);
+}
+
+.neon-theme .todo-list-empty-description {
+  color: var(--neon-text-secondary);
+}
+
+.neon-theme .todo-list {
+  gap: 1.2rem; /* Slightly increased gap for better visual separation */
 }

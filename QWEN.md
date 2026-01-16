@@ -208,3 +208,6 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## Qwen Added Memories
+- User requested to change the bot icon color in the todo-frontend app/page.tsx file. I located the bot icon in two places (floating button and panel header) and updated both to have explicit white color by adding the text-white class.

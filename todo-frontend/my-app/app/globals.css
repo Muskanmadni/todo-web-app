@@ -54,6 +54,26 @@
   --ring: #60a5fa;
 }
 
+/* Neon Dark Theme */
+.neon-theme {
+  --background: #0a0a0a;
+  --foreground: #f0f0f0;
+  --card: #111111;
+  --card-foreground: #f0f0f0;
+  --primary: #00ffff; /* neon cyan */
+  --primary-foreground: #000000;
+  --secondary: #cc00ff; /* neon purple */
+  --secondary-foreground: #f0f0f0;
+  --accent: #0066ff; /* neon blue */
+  --accent-foreground: #f0f0f0;
+  --destructive: #ff00cc; /* neon pink */
+  --destructive-foreground: #000000;
+  --border: #333333;
+  --input: #222222;
+  --ring: #00ffff;
+  background: linear-gradient(135deg, #0a0a0a 0%, #000011 50%, #1a0a1a 100%) !important;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);

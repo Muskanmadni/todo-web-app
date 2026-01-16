@@ -19,11 +19,14 @@ import {
   Check,
   Edit3,
   Calendar,
-  Flag
+  Flag,
+  X,
+  Bot
 } from 'lucide-react';
 
 // Import the professional UI CSS
 import './styles/professional-ui.css';
+import Chatbot from '@/components/Chatbot';
 
 // Define TypeScript interfaces
 interface User {
@@ -46,27 +49,30 @@ interface Task {
 
 // Theme context
 const useTheme = () => {
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [theme, setTheme] = useState<'light' | 'dark' | 'neon'>('neon');
 
   useEffect(() => {
     // Check for saved theme preference or system preference
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | 'neon' | null;
     if (savedTheme) {
       setTheme(savedTheme);
     } else {
-      setTheme(systemPrefersDark ? 'dark' : 'light');
+      setTheme('neon'); // Default to neon theme
     }
   }, []);
 
   useEffect(() => {
     // Apply theme to document
+    document.documentElement.classList.remove('light', 'dark', 'neon-theme');
+
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
       document.documentElement.style.colorScheme = 'dark';
+    } else if (theme === 'neon') {
+      document.documentElement.classList.add('neon-theme');
+      document.documentElement.style.colorScheme = 'dark';
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
       document.documentElement.style.colorScheme = 'light';
     }
 
@@ -75,7 +81,11 @@ const useTheme = () => {
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    setTheme(prev => {
+      if (prev === 'light') return 'dark';
+      if (prev === 'dark') return 'neon';
+      return 'light'; // If neon or anything else, switch to light
+    });
   };
 
   return { theme, toggleTheme };
@@ -96,6 +106,7 @@ export default function Home() {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showChatbot, setShowChatbot] = useState(false);
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
 
@@ -112,7 +123,7 @@ export default function Home() {
       const token = localStorage.getItem('access_token');
       if (!token) return;
 
-      const response = await fetch('https://todo-web-app-nvu7.onrender.com/health', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/health`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -124,7 +135,7 @@ export default function Home() {
       }
 
       // Fetch user tasks
-      const tasksResponse = await fetch('https://todo-web-app-nvu7.onrender.com/tasks', {
+      const tasksResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/tasks`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -152,7 +163,7 @@ export default function Home() {
     }
 
     try {
-      const response = await fetch('https://todo-web-app-nvu7.onrender.com/auth/register', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -182,7 +193,7 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await fetch('https://todo-web-app-nvu7.onrender.com/auth/login', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -230,7 +241,7 @@ export default function Home() {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch('https://todo-web-app-nvu7.onrender.com/tasks', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/tasks`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -269,7 +280,7 @@ export default function Home() {
       const token = localStorage.getItem('access_token');
       if (!token) return;
 
-      const response = await fetch(`https://todo-web-app-nvu7.onrender.com/tasks/${taskId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/tasks/${taskId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -303,7 +314,7 @@ export default function Home() {
       const token = localStorage.getItem('access_token');
       if (!token) return;
 
-      const response = await fetch(`https://todo-web-app-nvu7.onrender.com/tasks/${taskId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/tasks/${taskId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -349,31 +360,31 @@ export default function Home() {
   // If not logged in, show auth forms
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <div className="p-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600">
-              <div className="bg-white rounded-xl p-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center p-4">
+        <div className="w-full max-w-md auth-form-container">
+          <div className="bg-gray-900 rounded-2xl shadow-xl overflow-hidden border border-cyan-500 neon-glow">
+            <div className="p-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500">
+              <div className="bg-gray-900 rounded-xl p-8 auth-form">
                 <div className="text-center">
-                  <div className="mx-auto bg-gradient-to-r from-indigo-500 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center">
+                  <div className="mx-auto bg-gradient-to-r from-cyan-400 to-purple-500 w-16 h-16 rounded-full flex items-center justify-center">
                     <CheckCircle className="h-8 w-8 text-white" />
                   </div>
-                  <h2 className="mt-6 text-2xl font-extrabold text-gray-900">
+                  <h2 className="mt-6 text-2xl font-extrabold text-cyan-300">
                     {isLogin ? 'Welcome Back!' : 'Create Account'}
                   </h2>
-                  <p className="mt-2 text-sm text-gray-500">
+                  <p className="mt-2 text-sm text-purple-300">
                     {isLogin ? 'Sign in to continue' : 'Get started with us today'}
                   </p>
                 </div>
 
                 {error && (
-                  <div className="mt-6 bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                  <div className="mt-6 bg-red-900/30 border-l-4 border-red-500 p-4 rounded">
                     <div className="flex">
                       <div className="flex-shrink-0">
                         <AlertCircle className="h-5 w-5 text-red-400" />
                       </div>
                       <div className="ml-3">
-                        <p className="text-sm text-red-700">{error}</p>
+                        <p className="text-sm text-red-300">{error}</p>
                       </div>
                     </div>
                   </div>
@@ -382,7 +393,7 @@ export default function Home() {
                 <form className="mt-8 space-y-6" onSubmit={isLogin ? handleLogin : handleRegister}>
                   {!isLogin && (
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="email" className="block text-sm font-medium text-cyan-300 mb-1">
                         Email address
                       </label>
                       <input
@@ -393,7 +404,7 @@ export default function Home() {
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                        className="appearance-none block w-full px-4 py-3 border border-cyan-500/50 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 text-base bg-gray-800 text-white neon-glow input-field"
                         placeholder="you@example.com"
                       />
                     </div>
@@ -401,7 +412,7 @@ export default function Home() {
 
                   {isLogin && (
                     <div>
-                      <label htmlFor="login-email" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="login-email" className="block text-sm font-medium text-cyan-300 mb-1">
                         Email address
                       </label>
                       <input
@@ -412,14 +423,14 @@ export default function Home() {
                         required
                         value={loginEmail}
                         onChange={(e) => setLoginEmail(e.target.value)}
-                        className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                        className="appearance-none block w-full px-4 py-3 border border-cyan-500/50 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 text-base bg-gray-800 text-white neon-glow input-field"
                         placeholder="you@example.com"
                       />
                     </div>
                   )}
 
                   <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="password" className="block text-sm font-medium text-cyan-300 mb-1">
                       Password
                     </label>
                     <input
@@ -433,14 +444,14 @@ export default function Home() {
                         ? setLoginPassword(e.target.value)
                         : setPassword(e.target.value)
                       }
-                      className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                      className="appearance-none block w-full px-4 py-3 border border-cyan-500/50 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 text-base bg-gray-800 text-white neon-glow input-field"
                       placeholder="••••••••"
                     />
                   </div>
 
                   {!isLogin && (
                     <div>
-                      <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="confirm-password" className="block text-sm font-medium text-cyan-300 mb-1">
                         Confirm Password
                       </label>
                       <input
@@ -451,7 +462,7 @@ export default function Home() {
                         required
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                        className="appearance-none block w-full px-4 py-3 border border-cyan-500/50 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 text-base bg-gray-800 text-white neon-glow input-field"
                         placeholder="••••••••"
                       />
                     </div>
@@ -461,25 +472,25 @@ export default function Home() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-1/2 mx-auto flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-75 relative overflow-hidden group"
+                      className="w-1/2 mx-auto flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-md text-base font-medium text-black bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 focus:outline-none focus:ring-2 focus:ring-cyan-300 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-75 relative overflow-hidden group neon-glow button-primary"
                     >
                       <span className="absolute inset-0 w-full h-full transition-all duration-200 ease-out bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100"></span>
                       <span className="absolute inset-0 w-full bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-200 ease-out"></span>
                       {loading ? (
                         <>
-                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent mr-2"></div>
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent mr-2"></div>
                           Processing...
                         </>
                       ) : (
                         <>
                           {isLogin ? (
                             <>
-                              <Lock className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:rotate-12" />
+                              <Lock className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:rotate-12 text-black" />
                               Sign in
                             </>
                           ) : (
                             <>
-                              <User className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:rotate-12" />
+                              <User className="h-4 w-4 mr-2 transition-transform duration-200 group-hover:rotate-12 text-black" />
                               Create account
                             </>
                           )}
@@ -496,7 +507,7 @@ export default function Home() {
                       setIsLogin(!isLogin);
                       setError(null);
                     }}
-                    className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                    className="text-sm font-medium text-cyan-400 hover:text-purple-400 transition-colors"
                   >
                     {isLogin ? "Don't have an account? Register" : "Already have an account? Sign in"}
                   </button>
@@ -508,7 +519,7 @@ export default function Home() {
           <div className="mt-6 flex justify-center">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
+              className="p-2 rounded-full bg-gray-800 text-cyan-400 border border-cyan-500/50 hover:bg-gray-700 transition-colors"
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -748,6 +759,41 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+      {/* Chatbot Toggle Button - Positioned in the top-right corner */}
+      <button
+        className="fixed top-6 right-6 z-50 bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4 rounded-full shadow-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 flex items-center justify-center animate-pulse hover:animate-none chatbot-button"
+        onClick={() => setShowChatbot(!showChatbot)}
+        aria-label={showChatbot ? "Close Todo Assistant" : "Open Todo Assistant"}
+      >
+        <Bot className="w-6 h-6 text-white" style={{display: 'block', strokeWidth: '2'}} />
+      </button>
+
+      {/* Chatbot Panel - Appears directly below the icon when opened */}
+      {showChatbot && (
+        <div className="fixed top-[calc(3rem+3.5rem)] right-6 z-40 w-96 chatbot-panel-open chatbot-panel-container">
+          <div className="!bg-gradient-to-b from-gray-800 to-gray-900 rounded-2xl shadow-2xl border border-cyan-500 flex flex-col chatbot-content">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-3 rounded-t-2xl flex items-center justify-between chatbot-header">
+              <div className="flex items-center gap-2">
+                <div className="p-1 rounded-full bg-cyan-500/20">
+                  <Bot className="w-5 h-5 text-white" style={{display: 'block', strokeWidth: '2'}} />
+                </div>
+                <h3 className="font-semibold">Todo Assistant</h3>
+              </div>
+              <button
+                className="text-white/80 hover:text-white"
+                onClick={() => setShowChatbot(false)}
+                aria-label="Close chat"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto max-h-96 chatbot-messages !bg-gray-800/90 p-3">
+              <Chatbot onRefreshTasks={fetchUserData} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

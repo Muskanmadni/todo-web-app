@@ -186,3 +186,121 @@
     align-self: flex-end;
   }
 }
+
+/* Neon theme todo item styles */
+.neon-theme .todo-item {
+  background-color: var(--neon-bg-card);
+  border: 1px solid var(--neon-border);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.neon-theme .todo-item::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg,
+    var(--neon-blue),
+    var(--neon-purple),
+    var(--neon-pink),
+    var(--neon-blue));
+  border-radius: calc(0.75rem + 2px);
+  z-index: -1;
+  animation: neon-border 3s linear infinite;
+  background-size: 300% 300%;
+}
+
+.neon-theme .todo-item:hover {
+  border-left: 3px solid var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+  transform: translateX(5px);
+}
+
+.neon-theme .todo-item.completed {
+  background-color: var(--neon-bg-accent);
+  border-color: var(--neon-border);
+}
+
+.neon-theme .todo-item.completed .todo-item-title,
+.neon-theme .todo-item.completed .todo-item-description {
+  color: var(--neon-text-secondary);
+  text-decoration: line-through;
+}
+
+.neon-theme .todo-item-checkbox-btn {
+  background-color: var(--neon-bg-surface);
+  border: 2px solid var(--neon-border);
+  color: var(--neon-text-secondary);
+}
+
+.neon-theme .todo-item-checkbox-btn:hover {
+  border-color: var(--neon-primary);
+}
+
+.neon-theme .todo-item-checkbox-btn.checked {
+  background-color: var(--neon-success);
+  border-color: var(--neon-success);
+  color: var(--neon-bg-primary);
+}
+
+.neon-theme .todo-item-title {
+  color: var(--neon-text-primary);
+}
+
+.neon-theme .todo-item-description {
+  color: var(--neon-text-secondary);
+}
+
+.neon-theme .todo-item-priority.high {
+  background-color: var(--neon-bg-accent);
+  color: var(--neon-error);
+  border: 1px solid var(--neon-error);
+}
+
+.neon-theme .todo-item-priority.medium {
+  background-color: var(--neon-bg-accent);
+  color: var(--neon-warning);
+  border: 1px solid var(--neon-warning);
+}
+
+.neon-theme .todo-item-priority.low {
+  background-color: var(--neon-bg-accent);
+  color: var(--neon-success);
+  border: 1px solid var(--neon-success);
+}
+
+.neon-theme .todo-item-due-date {
+  color: var(--neon-text-secondary);
+  background-color: var(--neon-bg-accent);
+  border: 1px solid var(--neon-border);
+}
+
+.neon-theme .todo-item-created-date {
+  color: var(--neon-text-secondary);
+}
+
+.neon-theme .todo-item-action-btn {
+  background-color: var(--neon-bg-accent);
+  color: var(--neon-text-primary);
+  border: 1px solid var(--neon-border);
+}
+
+.neon-theme .todo-item-action-btn:hover {
+  background-color: var(--neon-bg-surface);
+  border-color: var(--neon-primary);
+  box-shadow: 0 0 10px rgba(0, 102, 255, 0.3);
+  color: var(--neon-cyan);
+}
+
+.neon-theme .todo-item-action-btn.delete {
+  color: var(--neon-error);
+}
+
+.neon-theme .todo-item-action-btn.delete:hover {
+  background-color: var(--neon-bg-accent);
+  color: var(--neon-error);
+}

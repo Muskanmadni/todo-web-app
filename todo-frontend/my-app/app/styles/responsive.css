@@ -1,12 +1,71 @@
 /* Responsive Breakpoints */
 
-/* Mobile (0px to 767px) */
-@media (max-width: 767px) {
+/* Base styles for chatbot panel components */
+.chatbot-panel-open {
+  position: fixed;
+  right: 1.5rem; /* 24px - matches Tailwind right-6 */
+  z-index: 55;
+  /* Note: top position is set in page.tsx with dynamic calculation */
+}
+
+.chatbot-content {
+  width: 26rem; /* Increased width */
+  height: 38rem; /* Increased height */
+  max-width: 90vw; /* Ensure it fits on small screens */
+  max-height: 85vh; /* Increased max height */
+  min-width: 22rem; /* Increased minimum width for usability */
+  min-height: 28rem; /* Increased minimum height for usability */
+  border-radius: 1rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.chatbot-header {
+  padding: 1rem;
+  border-radius: 1rem 1rem 0 0;
+  flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.chatbot-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  min-height: 0; /* Needed for flex child to have scrollbar */
+}
+
+.chatbot-input-area {
+  padding: 1rem;
+  flex-shrink: 0; /* Prevent input area from shrinking */
+}
+
+.chatbot-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chatbot-input {
+  flex: 1;
+  min-width: 150px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.chatbot-submit-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  min-width: auto;
+}
+
+/* Extra Small Devices (very small phones, 340px and down) */
+@media (max-width: 339px) {
   .container {
     width: 100%;
-    padding: 0 0.5rem; /* 8px */
+    padding: 0 0.25rem; /* 4px */
   }
-  
+
   /* Navigation */
   .nav-menu {
     flex-direction: column;
@@ -18,74 +77,436 @@
     border-top: 1px solid var(--border);
     display: none;
   }
-  
+
   .nav-menu.active {
     display: flex;
   }
-  
+
   .nav-link {
-    padding: 0.75rem 1rem; /* 12px 16px */
+    padding: 0.5rem 0.75rem; /* 8px 12px */
   }
-  
+
+  /* Forms */
+  .form-group {
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  /* Buttons */
+  .btn {
+    width: 100%;
+    margin: 0.25rem 0;
+    padding: 0.5rem 0.75rem; /* Smaller padding */
+  }
+
+  /* Cards */
+  .card {
+    padding: 0.25rem; /* Reduced from 1rem */
+    margin: 0.25rem;
+  }
+
+  /* Typography adjustments */
+  h1 { font-size: 1.25rem; } /* 20px */
+  h2 { font-size: 1.125rem; }  /* 18px */
+  h3 { font-size: 1rem; } /* 16px */
+
+  /* Todo form specific */
+  .todo-form-container {
+    padding: 0.5rem;
+    margin: 0.25rem;
+  }
+
+  .todo-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Todo list specific */
+  .todo-list-container {
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+  }
+
+  /* Auth form specific - Login/Signup */
+  .auth-form-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.5rem;
+  }
+
+  .auth-form {
+    padding: 0.75rem;
+  }
+
+  .auth-form .input-field {
+    padding: 0.5rem;
+    font-size: 0.875rem; /* Smaller font for small screens */
+  }
+
+  .auth-form .button-primary {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .auth-form .form-switch {
+    font-size: 0.875rem;
+  }
+
+  /* Chatbot panel adjustments */
+  .chatbot-content {
+    width: 90vw;
+    height: 60vh;
+    max-width: 24rem;
+    max-height: 80vh;
+  }
+
+  /* Chatbot button adjustments for very small screens */
+  .chatbot-button {
+    bottom: 0.5rem; /* 8px from bottom */
+    right: 0.5rem;   /* 8px from right */
+    padding: 0.75rem; /* Slightly smaller padding */
+  }
+
+  /* Chatbot panel when opened on very small screens */
+  .chatbot-panel-open {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    z-index: 55;
+  }
+
+  .chatbot-panel-open .chatbot-header {
+    padding: 1rem;
+    border-radius: 0;
+  }
+
+  .chatbot-panel-open .chatbot-content {
+    height: calc(100vh - 8rem); /* Adjust for header and input area */
+  }
+
+  .chatbot-panel-open .chatbot-messages {
+    height: calc(100vh - 12rem); /* Adjust for header, input area, and padding */
+  }
+
+  /* Input and button adjustments for very small screens */
+  .chatbot-input-area {
+    padding: 0.75rem;
+  }
+
+  .chatbot-form {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .chatbot-input {
+    min-width: 100%;
+    padding: 0.75rem;
+  }
+
+  .chatbot-submit-btn {
+    padding: 0.75rem;
+    align-self: stretch;
+  }
+}
+
+/* Small Devices (phones, 340px to 639px) */
+@media (min-width: 340px) and (max-width: 639px) {
+  .container {
+    width: 100%;
+    padding: 0 0.5rem; /* 8px */
+  }
+
+  /* Navigation */
+  .nav-menu {
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--background);
+    border-top: 1px solid var(--border);
+    display: none;
+  }
+
+  .nav-menu.active {
+    display: flex;
+  }
+
+  .nav-link {
+    padding: 0.625rem 0.875rem; /* 10px 14px */
+  }
+
   /* Forms */
   .form-group {
     width: 100%;
     margin-bottom: 1rem;
   }
-  
+
   .form-row {
     flex-direction: column;
   }
-  
+
   /* Buttons */
   .btn {
     width: 100%;
     margin: 0.25rem 0;
   }
-  
+
   /* Cards */
   .card {
     padding: 0.5rem; /* Reduced from 1rem */
     margin: 0.5rem;
   }
-  
+
+  /* Typography adjustments */
+  h1 { font-size: 1.5rem; } /* 24px */
+  h2 { font-size: 1.25rem; }  /* 20px */
+  h3 { font-size: 1.125rem; } /* 18px */
+
+  /* Todo form specific */
+  .todo-form-container {
+    padding: 0.75rem;
+    margin: 0.5rem;
+  }
+
+  .todo-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Todo list specific */
+  .todo-list-container {
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+  }
+
+  /* Auth form specific - Login/Signup */
+  .auth-form-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.75rem;
+  }
+
+  .auth-form {
+    padding: 1rem;
+  }
+
+  .auth-form .input-field {
+    padding: 0.75rem;
+  }
+
+  .auth-form .button-primary {
+    padding: 0.75rem 1rem;
+  }
+
+  /* Chatbot panel adjustments */
+  .chatbot-content {
+    width: 90vw;
+    height: 65vh;
+    max-width: 24rem;
+    max-height: 80vh;
+  }
+
+  /* Chatbot button adjustments for small screens */
+  .chatbot-button {
+    bottom: 1rem; /* 16px from bottom */
+    right: 1rem;   /* 16px from right */
+    padding: 1rem; /* Standard padding */
+  }
+
+  /* Chatbot panel when opened on small screens */
+  .chatbot-panel-open {
+    width: calc(100vw - 2rem);
+    height: calc(100vh - 2rem);
+    max-width: none;
+    max-height: none;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 55;
+  }
+
+  .chatbot-panel-open .chatbot-header {
+    padding: 1rem;
+  }
+
+  .chatbot-panel-open .chatbot-content {
+    height: calc(100vh - 8rem); /* Adjust for header and input area */
+  }
+
+  .chatbot-panel-open .chatbot-messages {
+    height: calc(100vh - 12rem); /* Adjust for header, input area, and padding */
+  }
+
+  /* Input and button adjustments for small screens */
+  .chatbot-input-area {
+    padding: 0.75rem;
+  }
+
+  .chatbot-input {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .chatbot-submit-btn {
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* Small Devices (landscape phones, 640px and up) */
+@media (min-width: 640px) and (max-width: 767px) {
+  .container {
+    width: 100%;
+    padding: 0 1rem;
+  }
+
   /* Typography adjustments */
   h1 { font-size: 1.75rem; } /* 28px */
   h2 { font-size: 1.5rem; }  /* 24px */
   h3 { font-size: 1.25rem; } /* 20px */
+
+  /* Chatbot button adjustments for landscape phones */
+  .chatbot-button {
+    bottom: 1rem;
+    right: 1rem;
+    padding: 1rem;
+  }
+
+  /* Chatbot panel when opened on landscape phones */
+  .chatbot-panel-open {
+    width: 90%;
+    height: 80vh;
+    max-width: 22rem; /* Maintain max width */
+    top: 10vh;
+    left: 5%;
+    right: 5%;
+    z-index: 55;
+  }
+
+  .chatbot-panel-open .chatbot-header {
+    padding: 1rem;
+  }
+
+  .chatbot-panel-open .chatbot-content {
+    height: calc(80vh - 6rem); /* Adjust for header and input area */
+  }
+
+  .chatbot-panel-open .chatbot-messages {
+    height: calc(80vh - 10rem); /* Adjust for header, input area, and padding */
+  }
+
+  /* Input and button adjustments for landscape phones */
+  .chatbot-input-area {
+    padding: 0.75rem;
+  }
+
+  .chatbot-input {
+    padding: 0.5rem 1rem;
+  }
+
+  .chatbot-submit-btn {
+    padding: 0.5rem 1rem;
+  }
 }
 
-/* Tablet (768px to 1023px) */
+/* Medium Devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 1023px) {
   .container {
-    max-width: 750px;
+    max-width: 768px;
     padding: 0 1rem; /* 16px */
   }
-  
+
   /* Navigation */
   .nav-link {
     padding: 0.5rem 0.75rem; /* 8px 12px */
   }
-  
+
   /* Cards */
   .card {
     padding: 0.75rem; /* 12px */
     margin: 0.75rem;
   }
-  
+
   /* Typography adjustments */
   h1 { font-size: 2rem; } /* 32px */
   h2 { font-size: 1.75rem; } /* 28px */
   h3 { font-size: 1.5rem; } /* 24px */
+
+  /* Todo form specific */
+  .todo-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Auth form specific - Login/Signup */
+  .auth-form-container {
+    padding: 1rem;
+  }
+
+  .auth-form {
+    padding: 1.5rem;
+  }
+
+  /* Chatbot button adjustments for tablets */
+  .chatbot-button {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    padding: 1.25rem;
+  }
+
+  /* Chatbot panel when opened on tablets */
+  .chatbot-panel-open {
+    width: 70%;
+    height: 75vh;
+    max-width: 24rem; /* Maintain reasonable max width */
+    top: 12.5vh;
+    left: 15%;
+    right: 15%;
+    z-index: 55;
+  }
+
+  .chatbot-panel-open .chatbot-header {
+    padding: 1rem;
+  }
+
+  .chatbot-panel-open .chatbot-content {
+    height: calc(75vh - 6rem); /* Adjust for header and input area */
+  }
+
+  .chatbot-panel-open .chatbot-messages {
+    height: calc(75vh - 10rem); /* Adjust for header, input area, and padding */
+  }
+
+  /* Input and button adjustments for tablets */
+  .chatbot-input-area {
+    padding: 1rem;
+  }
+
+  .chatbot-input {
+    padding: 0.5rem 1rem;
+  }
+
+  .chatbot-submit-btn {
+    padding: 0.5rem 1rem;
+  }
 }
 
-/* Desktop (1024px and above) */
-@media (min-width: 1024px) {
+/* Large Devices (desktops, 1024px and up) */
+@media (min-width: 1024px) and (max-width: 1279px) {
   .container {
-    max-width: 1200px;
+    max-width: 1024px;
     padding: 0 1rem; /* 16px */
   }
-  
+
   /* Navigation */
   .nav-menu {
     flex-direction: row;
@@ -95,34 +516,254 @@
     border: none;
     display: flex;
   }
-  
+
   .nav-link {
     padding: 0.75rem 1rem; /* 12px 16px */
   }
-  
+
   /* Forms */
   .form-row {
     display: flex;
     flex-wrap: wrap;
   }
-  
+
   .form-group {
     flex: 1 0 300px; /* At least 300px width */
     margin-right: 1rem;
   }
-  
+
   .form-group:last-child {
     margin-right: 0;
   }
-  
+
   /* Cards */
   .card {
     padding: 1rem; /* 16px */
     margin: 1rem;
   }
-  
+
   /* Typography adjustments */
   h1 { font-size: var(--font-size-h1); } /* 40px */
   h2 { font-size: var(--font-size-h2); } /* 32px */
   h3 { font-size: var(--font-size-h3); } /* 28px */
+
+  /* Chatbot button adjustments for desktops */
+  .chatbot-button {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  /* Auth form specific - Login/Signup */
+  .auth-form-container {
+    padding: 1rem;
+  }
+
+  .auth-form {
+    padding: 2rem;
+  }
+
+  /* Chatbot panel when opened on desktops */
+  .chatbot-panel-open {
+    width: 60%;
+    height: 70vh;
+    max-width: 26rem; /* Maintain reasonable max width */
+    top: 15vh;
+    left: 20%;
+    right: 20%;
+    z-index: 55;
+  }
+
+  .chatbot-panel-open .chatbot-header {
+    padding: 1rem;
+  }
+
+  .chatbot-panel-open .chatbot-content {
+    height: calc(70vh - 6rem); /* Adjust for header and input area */
+  }
+
+  .chatbot-panel-open .chatbot-messages {
+    height: calc(70vh - 10rem); /* Adjust for header, input area, and padding */
+  }
+
+  /* Input and button adjustments for desktops */
+  .chatbot-input-area {
+    padding: 1rem;
+  }
+
+  .chatbot-input {
+    padding: 0.5rem 1rem;
+  }
+
+  .chatbot-submit-btn {
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* Very small viewports and zoomed out states */
+@media (max-height: 500px) and (orientation: portrait), (max-width: 400px), (max-device-width: 480px) {
+  .chatbot-button {
+    bottom: 0.25rem; /* Very close to bottom edge */
+    right: 0.25rem;   /* Very close to right edge */
+    padding: 0.5rem;   /* Smaller padding */
+    width: 2.5rem;     /* Fixed width */
+    height: 2.5rem;    /* Fixed height */
+    min-width: 2.5rem; /* Ensure minimum width */
+    min-height: 2.5rem; /* Ensure minimum height */
+  }
+
+  /* Chatbot panel adjustments for very small screens */
+  .chatbot-panel-open {
+    top: 0.5rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    width: calc(100vw - 1rem);
+    height: calc(100vh - 1rem);
+    max-width: none;
+    margin: 0;
+    z-index: 55;
+  }
+
+  .chatbot-panel-open .chatbot-header {
+    padding: 1rem;
+  }
+
+  .chatbot-panel-open .chatbot-content {
+    height: calc(100vh - 7rem); /* Adjust for header and input area */
+  }
+
+  .chatbot-panel-open .chatbot-messages {
+    height: calc(100vh - 11rem); /* Adjust for header, input area, and padding */
+  }
+
+  /* Input and button adjustments for very small viewports */
+  .chatbot-input-area {
+    padding: 0.5rem;
+  }
+
+  .chatbot-form {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .chatbot-input {
+    min-width: 100%;
+    padding: 0.5rem;
+  }
+
+  .chatbot-submit-btn {
+    padding: 0.5rem;
+    align-self: stretch;
+  }
+}
+
+/* Handle zoomed-out states with specific min-width/min-height */
+@media screen and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 1) {
+  .chatbot-button {
+    position: fixed;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    z-index: 50;
+  }
+
+  /* Chatbot panel adjustments for zoomed-out states */
+  .chatbot-panel-open {
+    top: auto; /* Allow page.tsx positioning to take effect */
+    left: 0.5rem;
+    right: 0.5rem;
+    width: calc(100vw - 1rem);
+    max-width: none;
+    margin: 0;
+  }
+
+  .chatbot-panel-open .chatbot-header {
+    padding: 1rem;
+  }
+
+  .chatbot-panel-open .chatbot-content {
+    height: calc(100vh - 7rem); /* Adjust for header and input area */
+  }
+
+  .chatbot-panel-open .chatbot-messages {
+    height: calc(100vh - 11rem); /* Adjust for header, input area, and padding */
+  }
+
+  /* Input and button adjustments for zoomed-out states */
+  .chatbot-input-area {
+    padding: 0.5rem;
+  }
+
+  .chatbot-form {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .chatbot-input {
+    min-width: 100%;
+    padding: 0.5rem;
+  }
+
+  .chatbot-submit-btn {
+    padding: 0.5rem;
+    align-self: stretch;
+  }
+}
+
+/* Extra Large Devices (large desktops, 1280px and up) */
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+    padding: 0 1rem; /* 16px */
+  }
+
+  /* Typography adjustments */
+  h1 { font-size: calc(var(--font-size-h1) * 1.1); } /* Slightly larger */
+  h2 { font-size: calc(var(--font-size-h2) * 1.1); } /* Slightly larger */
+  h3 { font-size: calc(var(--font-size-h3) * 1.1); } /* Slightly larger */
+
+  /* Chatbot button adjustments for large desktops */
+  .chatbot-button {
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1.5rem;
+  }
+
+  /* Chatbot panel when opened on large desktops */
+  .chatbot-panel-open {
+    width: 50%;
+    height: 65vh;
+    max-width: 28rem; /* Maintain reasonable max width */
+    top: 17.5vh;
+    left: 25%;
+    right: 25%;
+    z-index: 55;
+  }
+
+  .chatbot-panel-open .chatbot-header {
+    padding: 1rem;
+  }
+
+  .chatbot-panel-open .chatbot-content {
+    height: calc(65vh - 6rem); /* Adjust for header and input area */
+  }
+
+  .chatbot-panel-open .chatbot-messages {
+    height: calc(65vh - 10rem); /* Adjust for header, input area, and padding */
+  }
+
+  /* Input and button adjustments for large desktops */
+  .chatbot-input-area {
+    padding: 1rem;
+  }
+
+  .chatbot-input {
+    padding: 0.5rem 1rem;
+  }
+
+  .chatbot-submit-btn {
+    padding: 0.5rem 1rem;
+  }
 }

@@ -9,6 +9,8 @@
   padding: 1rem; /* 16px */
   margin: 1rem 0; /* 16px vertical spacing */
   transition: box-shadow 0.2s ease-in-out;
+  position: relative;
+  overflow: hidden;
 }
 
 .card:hover {
@@ -96,6 +98,69 @@
 /* Card with no padding */
 .card.compact {
   padding: 0.5rem; /* 8px */
+}
+
+/* Neon theme card styles */
+.neon-theme .card {
+  background-color: var(--neon-bg-card);
+  border: 1px solid var(--neon-border);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.neon-theme .card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg,
+    var(--neon-blue),
+    var(--neon-purple),
+    var(--neon-pink),
+    var(--neon-blue));
+  border-radius: calc(0.5rem + 2px);
+  z-index: -1;
+  animation: neon-border 3s linear infinite;
+  background-size: 300% 300%;
+}
+
+.neon-theme .card:hover {
+  box-shadow: 0 0 15px rgba(0, 102, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.neon-theme .card-header {
+  border-bottom: 1px solid var(--neon-border-light);
+  color: var(--neon-text-primary);
+}
+
+.neon-theme .card-title {
+  color: var(--neon-text-primary);
+}
+
+.neon-theme .card-subtitle {
+  color: var(--neon-text-secondary);
+}
+
+.neon-theme .card.primary {
+  background-color: var(--neon-bg-accent);
+  border-color: var(--neon-primary);
+}
+
+.neon-theme .card.success {
+  background-color: var(--neon-bg-accent);
+  border-color: var(--neon-success);
+}
+
+.neon-theme .card.warning {
+  background-color: var(--neon-bg-accent);
+  border-color: var(--neon-warning);
+}
+
+.neon-theme .card.error {
+  background-color: var(--neon-bg-accent);
+  border-color: var(--neon-error);
 }
 
 /* Responsive card */

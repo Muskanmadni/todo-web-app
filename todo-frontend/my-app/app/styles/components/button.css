@@ -69,6 +69,71 @@
   transform: translateY(0);
 }
 
+/* Neon theme button styles */
+.neon-theme .btn-primary {
+  background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+  color: var(--neon-text-on-primary);
+  border: 1px solid var(--neon-border-neon);
+  box-shadow: 0 0 10px rgba(0, 102, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.neon-theme .btn-primary::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg,
+    var(--neon-cyan),
+    var(--neon-blue),
+    var(--neon-purple),
+    var(--neon-pink),
+    var(--neon-cyan));
+  border-radius: calc(0.375rem + 2px);
+  z-index: -1;
+  animation: neon-border 3s linear infinite;
+  background-size: 300% 300%;
+}
+
+.neon-theme .btn-primary:hover {
+  background: linear-gradient(45deg, var(--neon-primary-dark), var(--neon-secondary-dark));
+  box-shadow: 0 0 15px rgba(0, 102, 255, 0.5);
+  transform: translateY(-1px) scale(1.02);
+}
+
+.neon-theme .btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.neon-theme .btn-secondary {
+  background-color: var(--neon-bg-accent);
+  color: var(--neon-text-primary);
+  border: 1px solid var(--neon-border);
+}
+
+.neon-theme .btn-secondary:hover {
+  background-color: var(--neon-bg-surface);
+  border-color: var(--neon-primary);
+  box-shadow: 0 0 10px rgba(0, 102, 255, 0.3);
+  color: var(--neon-cyan);
+  transform: translateY(-1px);
+}
+
+@keyframes neon-border {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 /* Size variants */
 .btn-sm {
   padding: 0.375rem 0.75rem; /* 6px 12px */

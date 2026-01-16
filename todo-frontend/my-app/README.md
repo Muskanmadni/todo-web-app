@@ -32,4 +32,4 @@ The application will be available at `http://localhost:3000`.
 
 ## Environment Variables
 
-- `NEXT_PUBLIC_API_URL`: URL of the backend API (e.g., http://localhost:8000)
+- `NEXT_PUBLIC_API_URL`: URL of the backend API (e.g., https://todo-web-app-nvu7.onrender.com)

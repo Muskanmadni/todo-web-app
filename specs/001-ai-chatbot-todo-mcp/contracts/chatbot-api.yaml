@@ -1,0 +1,581 @@
+openapi: 3.0.3
+info:
+  title: AI Chatbot Todo API
+  description: API for managing todos through an AI-powered chatbot interface
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+  - url: https://staging-api.example.com/v1
+    description: Staging server
+
+paths:
+  /chat/conversation:
+    post:
+      summary: Create a new conversation or continue an existing one
+      description: Send a message to the AI chatbot and receive a response
+      operationId: createOrContinueConversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Successful response from the chatbot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - bearerAuth: []
+
+  /chat/conversations:
+    get:
+      summary: List user's conversations
+      description: Retrieve a list of the user's chatbot conversations
+      operationId: listConversations
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of conversations to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: offset
+          in: query
+          description: Number of conversations to skip
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: List of user's conversations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationsListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - bearerAuth: []
+
+  /chat/conversations/{conversationId}:
+    get:
+      summary: Get conversation details
+      description: Retrieve details of a specific conversation including all messages
+      operationId: getConversation
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          description: Unique identifier of the conversation
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Conversation details with all messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationDetailResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - bearerAuth: []
+
+  /todos:
+    get:
+      summary: List user's todos
+      description: Retrieve a list of the user's todo items
+      operationId: listTodos
+      parameters:
+        - name: status
+          in: query
+          description: Filter todos by status
+          required: false
+          schema:
+            type: string
+            enum: [pending, completed]
+        - name: limit
+          in: query
+          description: Maximum number of todos to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: offset
+          in: query
+          description: Number of todos to skip
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: List of user's todos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodosListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - bearerAuth: []
+
+    post:
+      summary: Create a new todo
+      description: Create a new todo item
+      operationId: createTodo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTodoRequest'
+      responses:
+        '201':
+          description: Todo created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - bearerAuth: []
+
+  /todos/{todoId}:
+    get:
+      summary: Get a specific todo
+      description: Retrieve details of a specific todo item
+      operationId: getTodo
+      parameters:
+        - name: todoId
+          in: path
+          required: true
+          description: Unique identifier of the todo
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Todo details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - bearerAuth: []
+
+    put:
+      summary: Update a todo
+      description: Update an existing todo item
+      operationId: updateTodo
+      parameters:
+        - name: todoId
+          in: path
+          required: true
+          description: Unique identifier of the todo
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTodoRequest'
+      responses:
+        '200':
+          description: Todo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: Delete a todo
+      description: Delete an existing todo item
+      operationId: deleteTodo
+      parameters:
+        - name: todoId
+          in: path
+          required: true
+          description: Unique identifier of the todo
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Todo deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: The user's message to the chatbot
+          example: "Add a todo: Buy groceries"
+        conversationId:
+          type: string
+          format: uuid
+          description: Optional conversation ID to continue an existing conversation
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        metadata:
+          type: object
+          description: Additional metadata for the request
+          example: {"client": "web", "version": "1.0"}
+
+    ChatResponse:
+      type: object
+      required:
+        - conversationId
+        - response
+        - action
+      properties:
+        conversationId:
+          type: string
+          format: uuid
+          description: The conversation ID (new or existing)
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        response:
+          type: string
+          description: The chatbot's response to the user
+          example: "I've added 'Buy groceries' to your todo list."
+        action:
+          type: string
+          description: The action performed by the chatbot
+          example: "todo_created"
+        todo:
+          $ref: '#/components/schemas/TodoResponse'
+          description: Optional todo object if the action involved a todo
+        metadata:
+          type: object
+          description: Additional metadata for the response
+          example: {"tokens_used": 45, "confidence": 0.95}
+
+    TodoResponse:
+      type: object
+      required:
+        - id
+        - title
+        - status
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the todo
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        title:
+          type: string
+          description: Title of the todo
+          example: "Buy groceries"
+        description:
+          type: string
+          description: Optional description of the todo
+          example: "Milk, bread, eggs, and fruit"
+        status:
+          type: string
+          enum: [pending, completed]
+          description: Status of the todo
+          example: "pending"
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user who owns the todo
+          example: "987e6543-e89b-12d3-a456-426614174999"
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: "2023-01-01T12:00:00Z"
+        completedAt:
+          type: string
+          format: date-time
+          description: Completion timestamp (if completed)
+          example: "2023-01-01T13:00:00Z"
+
+    CreateTodoRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          description: Title of the todo
+          example: "Buy groceries"
+        description:
+          type: string
+          description: Optional description of the todo
+          example: "Milk, bread, eggs, and fruit"
+
+    UpdateTodoRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Updated title of the todo
+          example: "Buy groceries and cook dinner"
+        description:
+          type: string
+          description: Updated description of the todo
+          example: "Milk, bread, eggs, fruit, and pasta"
+        status:
+          type: string
+          enum: [pending, completed]
+          description: Updated status of the todo
+          example: "completed"
+
+    Conversation:
+      type: object
+      required:
+        - id
+        - title
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the conversation
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        title:
+          type: string
+          description: Title of the conversation
+          example: "Shopping List Management"
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user who owns the conversation
+          example: "987e6543-e89b-12d3-a456-426614174999"
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: "2023-01-01T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: "2023-01-01T12:30:00Z"
+
+    Message:
+      type: object
+      required:
+        - id
+        - role
+        - content
+        - timestamp
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the message
+          example: "113e4567-e89b-12d3-a456-426614174111"
+        conversationId:
+          type: string
+          format: uuid
+          description: ID of the conversation this message belongs to
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        role:
+          type: string
+          enum: [user, assistant, system]
+          description: Role of the message sender
+          example: "user"
+        content:
+          type: string
+          description: Content of the message
+          example: "Add a todo: Buy groceries"
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the message
+          example: "2023-01-01T12:05:00Z"
+        metadata:
+          type: object
+          description: Additional metadata for the message
+          example: {"client": "web"}
+
+    TodosListResponse:
+      type: object
+      required:
+        - todos
+        - total
+      properties:
+        todos:
+          type: array
+          items:
+            $ref: '#/components/schemas/TodoResponse'
+        total:
+          type: integer
+          description: Total number of todos matching the query
+          example: 5
+        limit:
+          type: integer
+          description: Number of todos returned in this response
+          example: 5
+        offset:
+          type: integer
+          description: Number of todos skipped
+          example: 0
+
+    ConversationsListResponse:
+      type: object
+      required:
+        - conversations
+        - total
+      properties:
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversation'
+        total:
+          type: integer
+          description: Total number of conversations matching the query
+          example: 3
+        limit:
+          type: integer
+          description: Number of conversations returned in this response
+          example: 3
+        offset:
+          type: integer
+          description: Number of conversations skipped
+          example: 0
+
+    ConversationDetailResponse:
+      type: object
+      required:
+        - conversation
+        - messages
+      properties:
+        conversation:
+          $ref: '#/components/schemas/Conversation'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid input
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Invalid input"
+              message:
+                type: string
+                example: "Title is required"
+
+    Unauthorized:
+      description: Unauthorized - invalid or missing authentication
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Unauthorized"
+              message:
+                type: string
+                example: "Authentication token is missing or invalid"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Not Found"
+              message:
+                type: string
+                example: "The requested resource was not found"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Internal Server Error"
+              message:
+                type: string
+                example: "An unexpected error occurred"

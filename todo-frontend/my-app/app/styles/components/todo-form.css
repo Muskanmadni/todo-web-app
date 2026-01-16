@@ -8,6 +8,8 @@
   padding: 1.5rem; /* 24px */
   margin-bottom: 2.5rem; /* 40px */
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
 }
 
 /* Todo form header */
@@ -239,4 +241,141 @@
   .todo-form-submit {
     width: 100%;
   }
+}
+
+/* Neon theme todo form styles */
+.neon-theme .todo-form-container {
+  background-color: var(--neon-bg-card);
+  border: 1px solid var(--neon-border);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.neon-theme .todo-form-container::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg,
+    var(--neon-blue),
+    var(--neon-purple),
+    var(--neon-pink),
+    var(--neon-blue));
+  border-radius: calc(0.75rem + 2px);
+  z-index: -1;
+  animation: neon-border 3s linear infinite;
+  background-size: 300% 300%;
+}
+
+.neon-theme .todo-form-header {
+  border-bottom: 1px solid var(--neon-border-light);
+}
+
+.neon-theme .todo-form-title {
+  color: var(--neon-text-primary);
+}
+
+.neon-theme .todo-form-title-icon {
+  background-color: var(--neon-bg-accent);
+  color: var(--neon-primary);
+}
+
+.neon-theme .todo-form-error {
+  background-color: var(--neon-bg-accent);
+  border: 1px solid var(--neon-error);
+  color: var(--neon-error);
+}
+
+.neon-theme .todo-form-input {
+  background-color: var(--neon-bg-surface);
+  color: var(--neon-text-primary);
+  border: 1px solid var(--neon-border);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.1);
+}
+
+.neon-theme .todo-form-input:focus {
+  background-color: var(--neon-bg-surface);
+  color: var(--neon-text-primary);
+  border-color: var(--neon-primary);
+  box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.2);
+  outline: none;
+}
+
+.neon-theme .todo-form-input::placeholder {
+  color: var(--neon-text-secondary);
+  opacity: 0.7;
+}
+
+.neon-theme .todo-form-textarea {
+  background-color: var(--neon-bg-surface);
+  color: var(--neon-text-primary);
+  border: 1px solid var(--neon-border);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.1);
+}
+
+.neon-theme .todo-form-textarea:focus {
+  background-color: var(--neon-bg-surface);
+  color: var(--neon-text-primary);
+  border-color: var(--neon-primary);
+  box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.2);
+  outline: none;
+}
+
+.neon-theme .todo-form-select {
+  background-color: var(--neon-bg-surface);
+  color: var(--neon-text-primary);
+  border: 1px solid var(--neon-border);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.1);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23b0b0b0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+.neon-theme .todo-form-select:focus {
+  background-color: var(--neon-bg-surface);
+  color: var(--neon-text-primary);
+  border-color: var(--neon-primary);
+  box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.2);
+  outline: none;
+}
+
+.neon-theme .todo-form-label {
+  color: var(--neon-text-primary);
+}
+
+.neon-theme .todo-form-submit {
+  background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+  color: var(--neon-text-on-primary);
+  border: 1px solid var(--neon-border-neon);
+  box-shadow: 0 0 10px rgba(0, 102, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.neon-theme .todo-form-submit::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg,
+    var(--neon-cyan),
+    var(--neon-blue),
+    var(--neon-purple),
+    var(--neon-pink),
+    var(--neon-cyan));
+  border-radius: calc(0.5rem + 2px);
+  z-index: -1;
+  animation: neon-border 3s linear infinite;
+  background-size: 300% 300%;
+}
+
+.neon-theme .todo-form-submit:hover {
+  background: linear-gradient(45deg, var(--neon-primary-dark), var(--neon-secondary-dark));
+  box-shadow: 0 0 15px rgba(0, 102, 255, 0.5);
+  transform: translateY(-1px) scale(1.02);
+}
+
+.neon-theme .todo-form-submit:active {
+  transform: translateY(0) scale(0.98);
 }

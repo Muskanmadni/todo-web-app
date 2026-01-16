@@ -1,0 +1,322 @@
+/* Neon Dark Theme - Color Scheme */
+
+/* Neon Dark Theme Variables */
+:root {
+  /* Background colors */
+  --neon-bg-primary: #0a0a0a; /* Deep black */
+  --neon-bg-surface: #111111; /* Dark surface */
+  --neon-bg-card: #1a1a1a; /* Card background */
+  --neon-bg-accent: #222222; /* Accent background */
+
+  /* Text colors */
+  --neon-text-primary: #f0f0f0; /* Bright white */
+  --neon-text-secondary: #b0b0b0; /* Light gray */
+  --neon-text-on-primary: #ffffff; /* White text on primary */
+  --neon-text-on-secondary: #f0f0f0; /* Light text on secondary */
+
+  /* Neon accent colors */
+  --neon-cyan: #00ffff; /* Electric cyan */
+  --neon-blue: #0066ff; /* Electric blue */
+  --neon-purple: #cc00ff; /* Electric purple */
+  --neon-green: #00ff00; /* Electric green */
+  --neon-pink: #ff00cc; /* Electric pink */
+  --neon-yellow: #ffff00; /* Electric yellow */
+
+  /* Component colors */
+  --neon-primary: var(--neon-blue);
+  --neon-primary-dark: #0044cc;
+  --neon-primary-light: #3399ff;
+  --neon-secondary: var(--neon-purple);
+  --neon-secondary-dark: #9900cc;
+  --neon-secondary-light: #ff33ff;
+  --neon-success: var(--neon-green);
+  --neon-error: var(--neon-pink);
+  --neon-warning: var(--neon-yellow);
+
+  /* Border colors */
+  --neon-border: #333333;
+  --neon-border-light: #2a2a2a;
+  --neon-border-dark: #444444;
+  --neon-border-neon: var(--neon-blue);
+}
+
+/* Apply neon dark theme */
+.neon-theme {
+  --bg-primary: var(--neon-bg-primary);
+  --bg-surface: var(--neon-bg-surface);
+  --bg-card: var(--neon-bg-card);
+  --text-primary: var(--neon-text-primary);
+  --text-secondary: var(--neon-text-secondary);
+  --primary: var(--neon-primary);
+  --primary-dark: var(--neon-primary-dark);
+  --primary-light: var(--neon-primary-light);
+  --secondary: var(--neon-secondary);
+  --success: var(--neon-success);
+  --error: var(--neon-error);
+  --warning: var(--neon-warning);
+  --border: var(--neon-border);
+  --border-light: var(--neon-border-light);
+  --border-dark: var(--neon-border-dark);
+}
+
+/* Enhanced neon styles for specific elements */
+.neon-theme body {
+  background: linear-gradient(135deg, #0a0a0a 0%, #000011 50%, #1a0a1a 100%);
+  background-attachment: fixed;
+  color: var(--neon-text-primary);
+}
+
+/* Neon glow effects */
+.neon-theme .neon-glow {
+  position: relative;
+}
+
+.neon-theme .neon-glow::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, 
+    var(--neon-cyan), 
+    var(--neon-blue), 
+    var(--neon-purple), 
+    var(--neon-pink),
+    var(--neon-cyan));
+  border-radius: inherit;
+  z-index: -1;
+  animation: neon-pulse 2s infinite alternate;
+}
+
+.neon-theme .neon-glow.button-primary {
+  background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+  box-shadow: 0 0 10px var(--neon-blue), 0 0 20px rgba(0, 102, 255, 0.3);
+}
+
+.neon-theme .neon-glow.button-primary:hover {
+  box-shadow: 0 0 15px var(--neon-blue), 0 0 30px rgba(0, 102, 255, 0.5);
+}
+
+.neon-theme .neon-glow.input-field {
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+}
+
+.neon-theme .neon-glow.card {
+  box-shadow: 0 0 15px rgba(0, 102, 255, 0.2);
+}
+
+/* Neon animations */
+@keyframes neon-pulse {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Specific neon themed components */
+.neon-theme .card {
+  background-color: var(--neon-bg-card);
+  border: 1px solid var(--neon-border);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.neon-theme .card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, 
+    var(--neon-blue), 
+    var(--neon-purple), 
+    var(--neon-pink),
+    var(--neon-blue));
+  border-radius: calc(0.5rem + 2px);
+  z-index: -1;
+  animation: neon-border 3s linear infinite;
+  background-size: 300% 300%;
+}
+
+@keyframes neon-border {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.neon-theme input, 
+.neon-theme textarea, 
+.neon-theme select {
+  background-color: var(--neon-bg-surface);
+  border: 1px solid var(--neon-border);
+  color: var(--neon-text-primary);
+}
+
+.neon-theme input:focus, 
+.neon-theme textarea:focus, 
+.neon-theme select:focus {
+  outline: none;
+  border-color: var(--neon-primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.2);
+}
+
+/* Neon themed buttons */
+.neon-theme .button-primary {
+  background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+  color: white;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.neon-theme .button-primary:hover {
+  background: linear-gradient(45deg, var(--neon-primary-dark), var(--neon-secondary-dark));
+  box-shadow: 0 0 15px rgba(0, 102, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.neon-theme .button-secondary {
+  background-color: var(--neon-bg-accent);
+  color: var(--neon-text-primary);
+  border: 1px solid var(--neon-border);
+}
+
+.neon-theme .button-secondary:hover {
+  background-color: var(--neon-bg-surface);
+  border-color: var(--neon-primary);
+  box-shadow: 0 0 10px rgba(0, 102, 255, 0.3);
+}
+
+/* Neon themed navigation */
+.neon-theme .nav-header {
+  background: linear-gradient(to right, #0a0a0a, #111111);
+  border-bottom: 1px solid var(--neon-border-neon);
+  box-shadow: 0 0 10px rgba(0, 102, 255, 0.1);
+}
+
+.neon-theme .nav-brand-title {
+  background: linear-gradient(to right, var(--neon-cyan), var(--neon-blue), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+.neon-theme .nav-link {
+  color: var(--neon-text-secondary);
+  position: relative;
+}
+
+.neon-theme .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
+  transition: width 0.3s ease;
+}
+
+.neon-theme .nav-link:hover::after {
+  width: 100%;
+}
+
+.neon-theme .nav-link:hover {
+  color: var(--neon-cyan);
+}
+
+.neon-theme .nav-link.active {
+  color: var(--neon-cyan);
+}
+
+.neon-theme .nav-action-button {
+  background-color: var(--neon-bg-accent);
+  color: var(--neon-text-primary);
+  border: 1px solid var(--neon-border);
+}
+
+.neon-theme .nav-action-button:hover {
+  background-color: var(--neon-bg-surface);
+  border-color: var(--neon-primary);
+  box-shadow: 0 0 10px rgba(0, 102, 255, 0.3);
+  color: var(--neon-cyan);
+}
+
+/* Neon themed todo items */
+.neon-theme .todo-item {
+  background-color: var(--neon-bg-card);
+  border-left: 3px solid var(--neon-blue);
+  transition: all 0.3s ease;
+}
+
+.neon-theme .todo-item:hover {
+  border-left: 3px solid var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+  transform: translateX(5px);
+}
+
+.neon-theme .todo-item.completed .todo-item-title,
+.neon-theme .todo-item.completed .todo-item-description {
+  color: var(--neon-text-secondary);
+  text-decoration: line-through;
+}
+
+/* Neon themed form elements */
+.neon-theme .todo-form {
+  background-color: var(--neon-bg-surface);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Neon themed checkbox */
+.neon-theme .todo-item-checkbox-btn {
+  background-color: var(--neon-bg-surface);
+  border: 2px solid var(--neon-border);
+  color: var(--neon-text-secondary);
+}
+
+.neon-theme .todo-item-checkbox-btn.checked {
+  background-color: var(--neon-success);
+  border-color: var(--neon-success);
+  color: var(--neon-bg-primary);
+}
+
+/* Neon themed priority indicators */
+.neon-theme .todo-item-priority.low {
+  color: var(--neon-green);
+  border: 1px solid var(--neon-green);
+}
+
+.neon-theme .todo-item-priority.medium {
+  color: var(--neon-yellow);
+  border: 1px solid var(--neon-yellow);
+}
+
+.neon-theme .todo-item-priority.high {
+  color: var(--neon-pink);
+  border: 1px solid var(--neon-pink);
+}
+
+/* Neon themed chatbot panel */
+.neon-theme .chatbot-panel {
+  background: linear-gradient(135deg, var(--neon-bg-card), #0d0d0d);
+  border: 1px solid var(--neon-border-neon);
+  box-shadow: 0 0 20px rgba(0, 102, 255, 0.3);
+}
+
+.neon-theme .chatbot-header {
+  background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
+}
