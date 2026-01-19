@@ -179,8 +179,31 @@ export default function Home() {
         throw new Error(errorData.detail || 'Registration failed');
       }
 
-      // Automatically log in after registration
-      handleLogin(e);
+      // After successful registration, log in with the same credentials
+      const loginResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      if (!loginResponse.ok) {
+        const errorData = await loginResponse.json();
+        throw new Error(errorData.detail || 'Login failed');
+      }
+
+      const data = await loginResponse.json();
+      localStorage.setItem('access_token', data.access_token);
+
+      // Update authentication state
+      setIsLoggedIn(true);
+
+      // Fetch user data after login
+      fetchUserData();
     } catch (err: any) {
       setError(err.message || 'Registration failed');
       setLoading(false);
