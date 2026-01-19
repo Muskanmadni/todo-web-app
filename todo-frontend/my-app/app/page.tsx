@@ -112,27 +112,42 @@ export default function Home() {
 
   // Check if user is logged in on component mount
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      fetchUserData();
-    }
+    const checkAuthAndLoadData = async () => {
+      setIsLoading(true);
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        try {
+          // Verify token is still valid
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/health`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            setIsLoggedIn(true);
+            await fetchUserData(); // Fetch user data after confirming auth
+          } else {
+            // Token is invalid, remove it
+            localStorage.removeItem('access_token');
+            setIsLoggedIn(false);
+          }
+        } catch (err) {
+          console.error('Error verifying authentication:', err);
+          localStorage.removeItem('access_token');
+          setIsLoggedIn(false);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    checkAuthAndLoadData();
   }, []);
 
   const fetchUserData = async () => {
     try {
       const token = localStorage.getItem('access_token');
       if (!token) return;
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/health`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        localStorage.removeItem('access_token');
-        return;
-      }
 
       // Fetch user tasks
       const tasksResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/tasks`, {
@@ -199,13 +214,13 @@ export default function Home() {
       const data = await loginResponse.json();
       localStorage.setItem('access_token', data.access_token);
 
-      // Update authentication state
+      // Update authentication state and fetch user data
       setIsLoggedIn(true);
-
-      // Fetch user data after login
-      fetchUserData();
+      await fetchUserData();
     } catch (err: any) {
       setError(err.message || 'Registration failed');
+      setLoading(false);
+    } finally {
       setLoading(false);
     }
   };
@@ -235,13 +250,13 @@ export default function Home() {
       const data = await response.json();
       localStorage.setItem('access_token', data.access_token);
 
-      // Update authentication state
+      // Update authentication state and fetch user data
       setIsLoggedIn(true);
-
-      // Fetch user data after login
-      fetchUserData();
+      await fetchUserData();
     } catch (err: any) {
       setError(err.message || 'Login failed');
+      setLoading(false);
+    } finally {
       setLoading(false);
     }
   };
@@ -251,6 +266,8 @@ export default function Home() {
     setUser(null);
     setTasks([]);
     setIsLoggedIn(false);
+    // Optionally redirect to login or reload the page to ensure clean state
+    window.location.reload();
   };
 
   const handleCreateTask = async (e: React.FormEvent) => {
@@ -301,7 +318,11 @@ export default function Home() {
   const toggleTaskCompletion = async (taskId: string, currentStatus: boolean) => {
     try {
       const token = localStorage.getItem('access_token');
-      if (!token) return;
+      if (!token) {
+        // If no token, redirect to login
+        setIsLoggedIn(false);
+        return;
+      }
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/tasks/${taskId}`, {
         method: 'PUT',
@@ -315,6 +336,12 @@ export default function Home() {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          // Unauthorized - token might be expired
+          localStorage.removeItem('access_token');
+          setIsLoggedIn(false);
+          return;
+        }
         throw new Error('Failed to update task');
       }
 
@@ -335,7 +362,11 @@ export default function Home() {
 
     try {
       const token = localStorage.getItem('access_token');
-      if (!token) return;
+      if (!token) {
+        // If no token, redirect to login
+        setIsLoggedIn(false);
+        return;
+      }
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/tasks/${taskId}`, {
         method: 'DELETE',
@@ -345,6 +376,12 @@ export default function Home() {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          // Unauthorized - token might be expired
+          localStorage.removeItem('access_token');
+          setIsLoggedIn(false);
+          return;
+        }
         throw new Error('Failed to delete task');
       }
 
