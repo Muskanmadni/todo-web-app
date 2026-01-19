@@ -117,3 +117,95 @@ small {
 [data-theme="dark"] {
   color-scheme: dark;
 }
+
+/* Media queries for chatbot message box positioning on small screens */
+@media (max-height: 400px) {
+  .chatbot-messages-container {
+    max-height: 100px;
+    overflow-y: auto;
+  }
+}
+
+@media (max-height: 500px) and (min-height: 401px) {
+  .chatbot-messages-container {
+    max-height: 150px;
+    overflow-y: auto;
+  }
+}
+
+/* Media queries for screens with width 340px and below */
+@media (max-width: 340px) {
+  .chatbot-page-container {
+    height: auto;
+    min-height: 300px;
+  }
+
+  .chatbot-main-container {
+    height: auto;
+    min-height: 250px;
+    margin-bottom: 1rem;
+  }
+
+  .chatbot-messages-container {
+    max-height: 120px;
+    overflow-y: auto;
+  }
+}
+
+/* Media queries for small screens (341px to 480px) */
+@media (min-width: 341px) and (max-width: 480px) {
+  .chatbot-page-container {
+    height: auto;
+    min-height: 350px;
+  }
+
+  .chatbot-main-container {
+    height: auto;
+    min-height: 300px;
+  }
+
+  .chatbot-messages-container {
+    max-height: 150px;
+    overflow-y: auto;
+  }
+}
+
+/* Media query for medium screens */
+@media (min-width: 640px) and (max-width: 768px) {
+  .chatbot-messages-container {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+}
+
+/* Media query for large screens */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .chatbot-messages-container {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+}
+
+/* Media query for extra large screens */
+@media (min-width: 1024px) and (max-width: 1280px) {
+  .chatbot-messages-container {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+}
+
+/* Media query for extra extra large screens */
+@media (min-width: 1280px) {
+  .chatbot-messages-container {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+}
+
+/* Media query for largest screens */
+@media (min-width: 1536px) {
+  .chatbot-messages-container {
+    max-height: 500px;
+    overflow-y: auto;
+  }
+}

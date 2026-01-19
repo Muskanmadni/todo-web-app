@@ -21,7 +21,8 @@ import {
   Calendar,
   Flag,
   X,
-  Bot
+  Bot,
+  MessageCircle
 } from 'lucide-react';
 
 // Import the professional UI CSS
@@ -820,40 +821,14 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Chatbot Toggle Button - Positioned in the top-right corner */}
+      {/* Chatbot Navigate Button - Positioned in the top-right corner */}
       <button
         className="fixed top-6 right-6 z-50 bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4 rounded-full shadow-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 flex items-center justify-center animate-pulse hover:animate-none chatbot-button"
-        onClick={() => setShowChatbot(!showChatbot)}
-        aria-label={showChatbot ? "Close Todo Assistant" : "Open Todo Assistant"}
+        onClick={() => router.push('/chatbot')}
+        aria-label="Open Todo Assistant Page"
       >
-        <Bot className="w-6 h-6 text-white" style={{display: 'block', strokeWidth: '2'}} />
+        <MessageCircle className="w-6 h-6 text-white" style={{display: 'block', strokeWidth: '2'}} />
       </button>
-
-      {/* Chatbot Panel - Appears directly below the icon when opened */}
-      {showChatbot && (
-        <div className="fixed top-[calc(3rem+3.5rem)] right-6 z-40 w-96 chatbot-panel-open chatbot-panel-container">
-          <div className="!bg-gradient-to-b from-gray-800 to-gray-900 rounded-2xl shadow-2xl border border-cyan-500 flex flex-col chatbot-content">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-3 rounded-t-2xl flex items-center justify-between chatbot-header">
-              <div className="flex items-center gap-2">
-                <div className="p-1 rounded-full bg-cyan-500/20">
-                  <Bot className="w-5 h-5 text-white" style={{display: 'block', strokeWidth: '2'}} />
-                </div>
-                <h3 className="font-semibold">Todo Assistant</h3>
-              </div>
-              <button
-                className="text-white/80 hover:text-white"
-                onClick={() => setShowChatbot(false)}
-                aria-label="Close chat"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto max-h-96 chatbot-messages !bg-gray-800/90 p-3">
-              <Chatbot onRefreshTasks={fetchUserData} />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
