@@ -108,3 +108,8 @@ a:hover {
   background-color: var(--primary-light);
   color: var(--text-primary);
 }
+
+/* Text color utilities */
+.text-primary {
+  color: var(--primary);
+}

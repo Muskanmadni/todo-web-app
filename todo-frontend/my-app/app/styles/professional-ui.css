@@ -13,6 +13,7 @@
 @import './utilities/spacing.css';
 @import './utilities/accessibility.css';
 @import './responsive.css';
+@import './chatbot.css';
 
 /* Additional global styles for professional appearance */
 body {

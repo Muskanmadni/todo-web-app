@@ -59,6 +59,120 @@
   min-width: auto;
 }
 
+/* Chatbot component specific responsive styles */
+@media (min-width: 1024px) {
+  .chatbot-content {
+    width: 28rem; /* Slightly wider on desktop */
+    height: 40rem; /* Slightly taller on desktop */
+  }
+
+  .chatbot-header {
+    padding: 1.25rem; /* Slightly more padding on desktop */
+  }
+
+  .chatbot-messages {
+    padding: 1.25rem; /* Slightly more padding on desktop */
+  }
+
+  .chatbot-input-area {
+    padding: 1.25rem; /* Slightly more padding on desktop */
+  }
+
+  .chatbot-input {
+    padding: 0.625rem 1.25rem; /* Slightly more padding on desktop */
+  }
+
+  .chatbot-submit-btn {
+    padding: 0.625rem 1.25rem; /* Slightly more padding on desktop */
+  }
+}
+
+@media (min-width: 1280px) {
+  .chatbot-content {
+    width: 30rem; /* Wider on large desktop */
+    height: 42rem; /* Taller on large desktop */
+  }
+
+  .chatbot-header {
+    padding: 1.5rem; /* More padding on large desktop */
+  }
+
+  .chatbot-messages {
+    padding: 1.5rem; /* More padding on large desktop */
+  }
+
+  .chatbot-input-area {
+    padding: 1.5rem; /* More padding on large desktop */
+  }
+
+  .chatbot-input {
+    padding: 0.75rem 1.5rem; /* More padding on large desktop */
+  }
+
+  .chatbot-submit-btn {
+    padding: 0.75rem 1.5rem; /* More padding on large desktop */
+  }
+}
+
+/* Dedicated chatbot page container adjustments */
+.chatbot-page-container {
+  padding: 1rem;
+}
+
+.chatbot-main-container {
+  height: 65vh;
+  min-height: 400px;
+}
+
+/* Medium Devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .chatbot-page-container {
+    padding: 1.25rem;
+  }
+
+  .chatbot-main-container {
+    height: 70vh;
+    min-height: 450px;
+  }
+}
+
+/* Large Devices (laptops/desktops, 1024px and up) */
+@media (min-width: 1024px) {
+  .chatbot-page-container {
+    padding: 1.5rem;
+  }
+
+  .chatbot-main-container {
+    height: 72vh;
+    min-height: 500px;
+  }
+}
+
+/* Extra Large Devices (large desktops, 1280px and up) */
+@media (min-width: 1280px) {
+  .chatbot-page-container {
+    padding: 1.75rem;
+  }
+
+  .chatbot-main-container {
+    height: 75vh;
+    min-height: 550px;
+  }
+}
+
+/* Ultra Wide Desktops (very large screens, 1600px and up) */
+@media (min-width: 1600px) {
+  .chatbot-page-container {
+    padding: 2rem;
+  }
+
+  .chatbot-main-container {
+    height: 78vh;
+    min-height: 600px;
+  }
+}
+
+
 /* Extra Small Devices (very small phones, 340px and down) */
 @media (max-width: 339px) {
   .container {
@@ -565,12 +679,12 @@
 
   /* Chatbot panel when opened on desktops */
   .chatbot-panel-open {
-    width: 60%;
+    width: 40%;
     height: 70vh;
-    max-width: 26rem; /* Maintain reasonable max width */
+    max-width: 36rem; /* Increased max width for better desktop experience */
     top: 15vh;
-    left: 20%;
-    right: 20%;
+    left: 58%;
+    right: 2%;
     z-index: 55;
   }
 
@@ -586,6 +700,14 @@
     height: calc(70vh - 10rem); /* Adjust for header, input area, and padding */
   }
 
+  .chatbot-panel-open .chatbot-input {
+    padding: 0.5rem 1rem;
+  }
+
+  .chatbot-panel-open .chatbot-submit-btn {
+    padding: 0.5rem 1rem;
+  }
+
   /* Input and button adjustments for desktops */
   .chatbot-input-area {
     padding: 1rem;
@@ -597,6 +719,16 @@
 
   .chatbot-submit-btn {
     padding: 0.5rem 1rem;
+  }
+
+  /* Dedicated chatbot page adjustments for desktops */
+  .chatbot-page-container {
+    padding: 1.25rem;
+  }
+
+  .chatbot-main-container {
+    height: 72vh;
+    min-height: 550px;
   }
 }
 
@@ -733,12 +865,12 @@
 
   /* Chatbot panel when opened on large desktops */
   .chatbot-panel-open {
-    width: 50%;
-    height: 65vh;
-    max-width: 28rem; /* Maintain reasonable max width */
-    top: 17.5vh;
-    left: 25%;
-    right: 25%;
+    width: 40%;
+    height: 70vh;
+    max-width: 36rem; /* Further increased max width for better desktop experience */
+    top: 15vh;
+    left: 58%;
+    right: 2%;
     z-index: 55;
   }
 
@@ -747,11 +879,11 @@
   }
 
   .chatbot-panel-open .chatbot-content {
-    height: calc(65vh - 6rem); /* Adjust for header and input area */
+    height: calc(70vh - 6rem); /* Adjust for header and input area */
   }
 
   .chatbot-panel-open .chatbot-messages {
-    height: calc(65vh - 10rem); /* Adjust for header, input area, and padding */
+    height: calc(70vh - 10rem); /* Adjust for header, input area, and padding */
   }
 
   /* Input and button adjustments for large desktops */
@@ -765,5 +897,76 @@
 
   .chatbot-submit-btn {
     padding: 0.5rem 1rem;
+  }
+
+  /* Dedicated chatbot page adjustments for large desktops */
+  .chatbot-page-container {
+    padding: 1.5rem;
+  }
+
+  .chatbot-main-container {
+    height: 75vh;
+    min-height: 600px;
+  }
+}
+
+/* Ultra Wide Desktops (very large screens, 1600px and up) */
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1600px;
+    padding: 0 1.5rem; /* 24px */
+  }
+
+  /* Chatbot button adjustments for ultra wide desktops */
+  .chatbot-button {
+    bottom: 2.5rem;
+    right: 2.5rem;
+    padding: 1.75rem;
+  }
+
+  /* Chatbot panel when opened on ultra wide desktops */
+  .chatbot-panel-open {
+    width: 35%;
+    height: 70vh;
+    max-width: 40rem; /* Even larger max width for ultra wide screens */
+    top: 15vh;
+    left: 63%;
+    right: 2%;
+    z-index: 55;
+  }
+
+  .chatbot-panel-open .chatbot-header {
+    padding: 1.25rem;
+  }
+
+  .chatbot-panel-open .chatbot-content {
+    height: calc(70vh - 7rem); /* Adjust for larger header padding */
+  }
+
+  .chatbot-panel-open .chatbot-messages {
+    height: calc(70vh - 12rem); /* Adjust for larger header and input area */
+  }
+
+  /* Input and button adjustments for ultra wide desktops */
+  .chatbot-input-area {
+    padding: 1.25rem;
+  }
+
+  .chatbot-input {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .chatbot-submit-btn {
+    padding: 0.75rem 1.25rem;
+  }
+
+  /* Dedicated chatbot page adjustments for ultra wide desktops */
+  .chatbot-page-container {
+    padding: 2rem;
+  }
+
+  .chatbot-main-container {
+    height: 80vh;
+    min-height: 650px;
   }
 }
