@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field, Relationship
-from typing import List, Optional
+from typing import Optional, List, Dict, Any
 from datetime import datetime
 from uuid import UUID, uuid4
 from sqlalchemy import Column, String
@@ -12,6 +12,8 @@ class User(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     email: str = Field(sa_column=Column(String, unique=True, index=True, nullable=False))
     password_hash: str = Field(sa_column=Column(String, nullable=False))  # Added to match main.py
+    timezone: str = Field(default="UTC", sa_column=Column(String, nullable=False))  # User's timezone
+    reminder_preferences: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(sqlalchemy.JSON))  # Store as JSON
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

@@ -132,7 +132,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onRefreshTasks }) => {
         {messages.length === 0 ? (
           <div className="welcome-container">
             <div className="p-3 sm:p-4 bg-gray-700/50 rounded-full mb-4 sm:mb-6">
-              <Bot className="w-10 h-10 sm:w-12 sm:h-12 text-blue-400" />
+              <Bot className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
             </div>
             <h3 className="welcome-title text-base sm:text-xl">How can I help you today?</h3>
             <p className="welcome-subtitle text-xs sm:text-sm">Ask me to create, update, or manage your todos</p>

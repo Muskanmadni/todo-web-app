@@ -82,11 +82,7 @@ def initialize_mcp_tools():
     Initialize the MCP tools after all modules are loaded
     """
     # Use absolute import to avoid relative import errors
-    try:
-        from .tools import TodoMCPTools
-    except ImportError:
-        # Fallback for when module is run directly
-        from mcp.tools import TodoMCPTools
+    from mcp.tools import TodoMCPTools
 
     MCP_TOOLS["create_todo"] = TodoMCPTools.create_todo
     MCP_TOOLS["update_todo"] = TodoMCPTools.update_todo

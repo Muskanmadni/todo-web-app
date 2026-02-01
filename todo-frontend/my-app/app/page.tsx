@@ -22,12 +22,17 @@ import {
   Flag,
   X,
   Bot,
-  MessageCircle
+  MessageCircle,
+  Tag,
+  Repeat
 } from 'lucide-react';
 
 // Import the professional UI CSS
 import './styles/professional-ui.css';
 import Chatbot from '@/components/Chatbot';
+import AdvancedTaskForm from '@/components/Tasks/AdvancedTaskForm';
+import RecurringTaskForm from '@/components/Tasks/RecurringTaskForm';
+import ReminderForm from '@/components/Tasks/ReminderForm';
 
 // Define TypeScript interfaces
 interface User {
@@ -46,6 +51,7 @@ interface Task {
   user_id: string;
   created_at: string;
   updated_at: string;
+  tags?: string[]; // Optional tags property
 }
 
 // Theme context
@@ -99,6 +105,9 @@ export default function Home() {
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
   const [dueDate, setDueDate] = useState<string>('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [currentTag, setCurrentTag] = useState('');
+  const [recurrencePattern, setRecurrencePattern] = useState<string>('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -108,6 +117,9 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showChatbot, setShowChatbot] = useState(false);
+  const [showAdvancedForm, setShowAdvancedForm] = useState(false);
+  const [showRecurringForm, setShowRecurringForm] = useState(false);
+  const [showReminderForm, setShowReminderForm] = useState(false);
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
 
@@ -292,7 +304,9 @@ export default function Home() {
           title,
           description: description || null,
           priority,
+          tags: tags || [],
           due_date: dueDate || null,
+          recurrence_pattern: recurrencePattern || null,
         }),
       });
 
@@ -309,8 +323,191 @@ export default function Home() {
       setDescription('');
       setPriority('medium');
       setDueDate('');
+      setTags([]);
+      setCurrentTag('');
+      setRecurrencePattern('');
     } catch (err: any) {
       setError(err.message || 'Failed to create task');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateAdvancedTask = async (formData: {
+    title: string;
+    description: string;
+    priority: 'low' | 'medium' | 'high';
+    tags: string[];
+    dueDate: string;
+    recurrencePattern: string;
+  }) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/tasks`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description || null,
+          priority: formData.priority,
+          tags: formData.tags || [],
+          due_date: formData.dueDate || null,
+          recurrence_pattern: formData.recurrencePattern || null,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to create task');
+      }
+
+      const newTask = await response.json();
+      setTasks([...tasks, newTask]);
+
+      // Close the advanced form
+      setShowAdvancedForm(false);
+    } catch (err: any) {
+      setError(err.message || 'Failed to create task');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateRecurringTask = async (formData: {
+    title: string;
+    description: string;
+    priority: 'low' | 'medium' | 'high';
+    tags: string[];
+    dueDate: string;
+    recurrencePattern: {
+      frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
+      interval: number;
+      endDate?: string;
+      occurrences?: number;
+      daysOfWeek?: string[];
+    };
+  }) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/tasks`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description || null,
+          priority: formData.priority,
+          tags: formData.tags || [],
+          due_date: formData.dueDate || null,
+          recurrence_pattern: JSON.stringify(formData.recurrencePattern), // Convert to JSON string
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to create recurring task');
+      }
+
+      const newTask = await response.json();
+      setTasks([...tasks, newTask]);
+
+      // Close the recurring form
+      setShowRecurringForm(false);
+    } catch (err: any) {
+      setError(err.message || 'Failed to create recurring task');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateReminder = async (formData: {
+    title: string;
+    description: string;
+    priority: 'low' | 'medium' | 'high';
+    tags: string[];
+    dueDate: string;
+    reminderTime: string;
+    reminderMethod: 'email' | 'push' | 'both';
+    timezone: string;
+  }) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      // First create the task
+      const taskResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/tasks`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description || null,
+          priority: formData.priority,
+          tags: formData.tags || [],
+          due_date: formData.dueDate || null,
+        }),
+      });
+
+      if (!taskResponse.ok) {
+        const errorData = await taskResponse.json();
+        throw new Error(errorData.detail || 'Failed to create task');
+      }
+
+      const newTask = await taskResponse.json();
+
+      // Then create the reminder
+      const reminderResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todo-web-app-nvu7.onrender.com'}/reminders`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          task_id: newTask.id,
+          scheduled_time: formData.reminderTime,
+        }),
+      });
+
+      if (!reminderResponse.ok) {
+        const errorData = await reminderResponse.json();
+        throw new Error(errorData.detail || 'Failed to create reminder');
+      }
+
+      const reminderData = await reminderResponse.json();
+
+      // Add the task to the list
+      setTasks([...tasks, newTask]);
+
+      // Close the reminder form
+      setShowReminderForm(false);
+    } catch (err: any) {
+      setError(err.message || 'Failed to create reminder');
     } finally {
       setLoading(false);
     }
@@ -628,11 +825,85 @@ export default function Home() {
         <div className="todo-form-container">
           {/* Task Creation Form */}
           <div className="mb-10">
-            <div className="todo-form-header">
-              <div className="todo-form-title-icon">
-                <Plus className="h-5 w-5 text-primary" />
+            <div className="todo-form-header flex justify-between items-center">
+              <div className="flex items-center">
+                <div className="todo-form-title-icon">
+                  <Plus className="h-5 w-5 text-primary" />
+                </div>
+                <h2 className="todo-form-title">Create New Task</h2>
               </div>
-              <h2 className="todo-form-title">Create New Task</h2>
+
+              <div className="flex space-x-2">
+                {showRecurringForm ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowRecurringForm(false)}
+                    className="text-sm font-medium text-cyan-400 hover:text-purple-400 transition-colors"
+                  >
+                    Cancel Recurring
+                  </button>
+                ) : showAdvancedForm ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowAdvancedForm(false)}
+                    className="text-sm font-medium text-cyan-400 hover:text-purple-400 transition-colors"
+                  >
+                    Cancel Advanced
+                  </button>
+                ) : null}
+
+                {!(showAdvancedForm || showRecurringForm || showReminderForm) && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAdvancedForm(true);
+                        setShowRecurringForm(false);
+                        setShowReminderForm(false);
+                      }}
+                      className="text-sm font-medium text-cyan-400 hover:text-purple-400 transition-colors"
+                    >
+                      Advanced Form
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowRecurringForm(true);
+                        setShowAdvancedForm(false);
+                        setShowReminderForm(false);
+                      }}
+                      className="text-sm font-medium text-cyan-400 hover:text-purple-400 transition-colors"
+                    >
+                      Recurring Form
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowReminderForm(true);
+                        setShowAdvancedForm(false);
+                        setShowRecurringForm(false);
+                      }}
+                      className="text-sm font-medium text-cyan-400 hover:text-purple-400 transition-colors"
+                    >
+                      Reminder Form
+                    </button>
+                  </>
+                )}
+
+                {(showAdvancedForm || showRecurringForm || showReminderForm) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAdvancedForm(false);
+                      setShowRecurringForm(false);
+                      setShowReminderForm(false);
+                    }}
+                    className="text-sm font-medium text-cyan-400 hover:text-purple-400 transition-colors"
+                  >
+                    Basic Form
+                  </button>
+                )}
+              </div>
             </div>
 
             {error && (
@@ -642,89 +913,106 @@ export default function Home() {
               </div>
             )}
 
-            <form onSubmit={handleCreateTask} className="todo-form">
-              <div className="todo-form-group">
-                <label htmlFor="title" className="todo-form-label required">
-                  <Edit3 />
-                  Title
-                </label>
-                <input
-                  type="text"
-                  id="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                  className="todo-form-input"
-                  placeholder="What needs to be done?"
-                />
-              </div>
-
-              <div className="todo-form-group">
-                <label htmlFor="description" className="todo-form-label">
-                  <Edit3 />
-                  Description
-                </label>
-                <textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="todo-form-textarea"
-                  placeholder="Add details about the task (optional)"
-                  rows={3}
-                />
-              </div>
-
-              <div className="todo-form-row">
+            {showReminderForm ? (
+              <ReminderForm
+                onSubmit={handleCreateReminder}
+                onCancel={() => setShowReminderForm(false)}
+              />
+            ) : showRecurringForm ? (
+              <RecurringTaskForm
+                onSubmit={handleCreateRecurringTask}
+                onCancel={() => setShowRecurringForm(false)}
+              />
+            ) : showAdvancedForm ? (
+              <AdvancedTaskForm
+                onSubmit={handleCreateAdvancedTask}
+                onCancel={() => setShowAdvancedForm(false)}
+              />
+            ) : (
+              <form onSubmit={handleCreateTask} className="todo-form">
                 <div className="todo-form-group">
-                  <label htmlFor="priority" className="todo-form-label">
-                    <Flag />
-                    Priority
-                  </label>
-                  <select
-                    id="priority"
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value as 'low' | 'medium' | 'high')}
-                    className="todo-form-select"
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
-                </div>
-
-                <div className="todo-form-group">
-                  <label htmlFor="due-date" className="todo-form-label">
-                    <Calendar />
-                    Due Date (optional)
+                  <label htmlFor="title" className="todo-form-label required">
+                    <Edit3 />
+                    Title
                   </label>
                   <input
-                    type="date"
-                    id="due-date"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
+                    type="text"
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
                     className="todo-form-input"
+                    placeholder="What needs to be done?"
                   />
                 </div>
-              </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="todo-form-submit"
-              >
-                {loading ? (
-                  <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    Creating...
-                  </>
-                ) : (
-                  <>
-                    <Plus />
-                    Create Task
-                  </>
-                )}
-              </button>
-            </form>
+                <div className="todo-form-group">
+                  <label htmlFor="description" className="todo-form-label">
+                    <Edit3 />
+                    Description
+                  </label>
+                  <textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="todo-form-textarea"
+                    placeholder="Add details about the task (optional)"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="todo-form-row">
+                  <div className="todo-form-group">
+                    <label htmlFor="priority" className="todo-form-label">
+                      <Flag />
+                      Priority
+                    </label>
+                    <select
+                      id="priority"
+                      value={priority}
+                      onChange={(e) => setPriority(e.target.value as 'low' | 'medium' | 'high')}
+                      className="todo-form-select"
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
+                  </div>
+
+                  <div className="todo-form-group">
+                    <label htmlFor="due-date" className="todo-form-label">
+                      <Calendar />
+                      Due Date (optional)
+                    </label>
+                    <input
+                      type="date"
+                      id="due-date"
+                      value={dueDate}
+                      onChange={(e) => setDueDate(e.target.value)}
+                      className="todo-form-input"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="todo-form-submit"
+                >
+                  {loading ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Plus />
+                      Create Task
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
           </div>
 
           {/* Task List */}
@@ -795,6 +1083,20 @@ export default function Home() {
                               <Calendar />
                               {new Date(task.due_date).toLocaleDateString()}
                             </span>
+                          )}
+
+                          {task.tags && task.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {task.tags.map((tag: string, index: number) => (
+                                <span
+                                  key={index}
+                                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+                                >
+                                  <Tag className="h-2.5 w-2.5 mr-1" />
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
                           )}
 
                           <span className="todo-item-created-date">

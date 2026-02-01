@@ -28,18 +28,24 @@ import re
 load_dotenv()
 
 # Configure Google Generative AI
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+gemini_api_key = os.getenv("GEMINI_API_KEY")
 
-# Initialize the model
-generation_config = {
-    "temperature": 0.3,
-    "max_output_tokens": 200,
-}
+if not gemini_api_key:
+    print("Warning: GEMINI_API_KEY environment variable is not set. Chatbot functionality may be limited.")
+    gemini_model = None
+else:
+    genai.configure(api_key=gemini_api_key)
 
-gemini_model = genai.GenerativeModel(
-    model_name="gemini-2.5-flash",
-    generation_config=generation_config,
-)
+    # Initialize the model
+    generation_config = {
+        "temperature": 0.3,
+        "max_output_tokens": 200,
+    }
+
+    gemini_model = genai.GenerativeModel(
+        model_name="gemini-2.5-flash",
+        generation_config=generation_config,
+    )
 
 
 
@@ -217,27 +223,40 @@ def chat_endpoint(
 def process_natural_language_command(message: str, session: Session, conversation_id: UUID, user_id: UUID, conversation_history=None):
     """
     Process natural language commands using Google Gemini and execute appropriate actions.
+    Enhanced with error handling, disambiguation, and AI misinterpretation handling.
     """
+    # If Gemini model is not available, use fallback processing
+    if gemini_model is None:
+        print("Gemini model not available, using fallback processing")
+        return process_natural_language_command_fallback(message, session, conversation_id, user_id, conversation_history)
+
     # Prepare conversation history for the AI
     # Format the conversation history for Gemini
     conversation_text = "System: You are an AI assistant that helps users manage their todos.\n"
     conversation_text += "Respond in the following JSON format:\n"
     conversation_text += """{
-        "action": "create_todo|complete_todo|delete_todo|list_todos|unknown_command|error",
+        "action": "create_todo|create_todo_with_priority|complete_todo|delete_todo|list_todos|search_todos|filter_todos|sort_todos|create_recurring_task|cancel_recurring_series|unknown_command|error",
         "title": "todo title if applicable",
         "description": "todo description if applicable",
+        "priority": "priority level (low, medium, high)",
+        "tags": "list of tags if applicable",
+        "due_date": "due date in ISO format if applicable",
+        "recurrence_pattern": "recurrence pattern if applicable",
         "response": "natural language response to the user"
     }\n\n"""
 
     conversation_text += "For example:\n"
-    conversation_text += "- User: 'Add a todo: Buy groceries'\n"
-    conversation_text += '- Response: {"action": "create_todo", "title": "Buy groceries", "response": "I\'ve added \'Buy groceries\' to your todo list."}\n\n'
+    conversation_text += "- User: 'Add a high priority todo: Buy groceries due tomorrow with tags shopping, urgent'\n"
+    conversation_text += '''- Response: {"action": "create_todo_with_priority", "title": "Buy groceries", "priority": "high", "tags": ["shopping", "urgent"], "due_date": "2023-10-06T00:00:00", "response": "I've added 'Buy groceries' to your todo list with high priority."}\n\n'''
 
     conversation_text += "- User: 'Complete 'Buy groceries''\n"
     conversation_text += '- Response: {"action": "complete_todo", "title": "Buy groceries", "response": "I\'ve marked \'Buy groceries\' as complete."}\n\n'
 
     conversation_text += "- User: 'Show my todos'\n"
     conversation_text += '- Response: {"action": "list_todos", "response": "Here are your todos..."}\n\n'
+
+    conversation_text += "- User: 'Create a recurring task: Water plants daily'\n"
+    conversation_text += '''- Response: {"action": "create_recurring_task", "title": "Water plants", "recurrence_pattern": "daily", "response": "I've created a recurring task to water plants daily."}\n\n'''
 
     conversation_text += "Always respond in valid JSON format only.\n\n"
 
@@ -253,27 +272,62 @@ def process_natural_language_command(message: str, session: Session, conversatio
 
     try:
         # Call Gemini API to interpret the user's intent
-        response = gemini_model.generate_content(conversation_text)
-
-        # Extract the AI's response
-        ai_response = response.text.strip()
+        try:
+            response = gemini_model.generate_content(conversation_text)
+            # Extract the AI's response
+            ai_response = response.text.strip()
+        except Exception as gemini_error:
+            print(f"Gemini API error: {str(gemini_error)}")
+            print("Using fallback rule-based processing...")
+            # Fall back to rule-based processing if Gemini API fails
+            return process_natural_language_command_fallback(message, session, conversation_id, user_id, conversation_history)
 
         # Parse the JSON response from the AI
         try:
             # Try to extract JSON from the response if it contains extra text
-            # Look for JSON between curly braces
-            json_match = re.search(r'\{.*\}', ai_response, re.DOTALL)
-            if json_match:
-                parsed_response = json.loads(json_match.group())
-            else:
+            # Look for JSON between curly braces, handling nested braces properly
+            # First, try to parse the whole response as JSON
+            try:
                 parsed_response = json.loads(ai_response)
-        except json.JSONDecodeError:
-            # If JSON parsing fails, return an error
+            except json.JSONDecodeError:
+                # If that fails, try to extract JSON from the response
+                # Find the outermost JSON object by counting braces
+                brace_count = 0
+                start_idx = -1
+
+                for i, char in enumerate(ai_response):
+                    if char == '{':
+                        if brace_count == 0:
+                            start_idx = i
+                        brace_count += 1
+                    elif char == '}':
+                        brace_count -= 1
+                        if brace_count == 0 and start_idx != -1:
+                            # Found a complete JSON object
+                            json_str = ai_response[start_idx:i+1]
+                            try:
+                                parsed_response = json.loads(json_str)
+                                break
+                            except json.JSONDecodeError:
+                                # If this JSON is invalid, continue looking
+                                start_idx = -1
+                                continue
+                else:
+                    # If we couldn't find a valid JSON object, return an error
+                    return "I'm having trouble understanding your request. Could you please rephrase it?", "error", None
+        except Exception as e:
+            # If JSON parsing fails for any reason, return an error
+            print(f"JSON parsing error: {str(e)}")
+            print(f"Raw Gemini response: {ai_response}")
             return "I'm having trouble understanding your request. Could you please rephrase it?", "error", None
 
         action = parsed_response.get("action", "unknown_command")
         title = parsed_response.get("title")
         response_text = parsed_response.get("response", "I processed your request.")
+        priority = parsed_response.get("priority", "medium")
+        tags = parsed_response.get("tags", [])
+        due_date = parsed_response.get("due_date")
+        recurrence_pattern = parsed_response.get("recurrence_pattern")
 
         # Execute the appropriate action based on the AI's interpretation
         if action == "create_todo":
@@ -294,6 +348,104 @@ def process_natural_language_command(message: str, session: Session, conversatio
                     return "Sorry, I'm having trouble connecting to the todo service right now. Please try again later.", "service_unavailable", None
             else:
                 return "I couldn't understand the todo title. Please try again.", "error", None
+
+        elif action == "create_todo_with_priority":
+            if title:
+                try:
+                    # Create the todo with advanced features
+                    todo = TodoMCPTools.create_todo_with_priority(
+                        title=title,
+                        description=parsed_response.get("description"),
+                        user_id=str(user_id),
+                        priority=priority,
+                        tags=tags,
+                        due_date=due_date,
+                        recurrence_pattern=recurrence_pattern
+                    )
+                    return response_text, "todo_created", {
+                        "id": todo['id'],
+                        "title": todo['title'],
+                        "status": todo['status'],
+                        "priority": todo.get('priority'),
+                        "tags": todo.get('tags'),
+                        "dueDate": todo.get('dueDate'),
+                        "recurrencePattern": todo.get('recurrencePattern')
+                    }
+                except Exception as e:
+                    return "Sorry, I'm having trouble connecting to the todo service right now. Please try again later.", "service_unavailable", None
+            else:
+                return "I couldn't understand the todo title. Please try again.", "error", None
+
+        elif action == "create_recurring_task":
+            if title and recurrence_pattern:
+                try:
+                    # Create a recurring task
+                    todo = TodoMCPTools.create_recurring_task(
+                        title=title,
+                        description=parsed_response.get("description"),
+                        user_id=str(user_id),
+                        priority=priority,
+                        tags=tags,
+                        due_date=due_date,
+                        recurrence_pattern=recurrence_pattern
+                    )
+                    return response_text, "recurring_task_created", {
+                        "id": todo['id'],
+                        "title": todo['title'],
+                        "status": todo['status'],
+                        "recurrencePattern": todo.get('recurrencePattern')
+                    }
+                except Exception as e:
+                    return "Sorry, I'm having trouble connecting to the todo service right now. Please try again later.", "service_unavailable", None
+            else:
+                return "I couldn't understand the recurring task details. Please specify both the task and the recurrence pattern.", "error", None
+
+        elif action == "cancel_recurring_series":
+            if title:
+                # Find the recurring todo by title
+                todos = session.exec(
+                    select(Todo).where(
+                        Todo.title.contains(title),  # Use contains to find similar titles
+                        Todo.user_id == user_id,  # Use the actual user ID from the session
+                        Todo.recurrence_pattern.is_not(None)  # Only recurring tasks
+                    )
+                ).all()
+
+                if todos:
+                    # If multiple todos match, check for exact match first
+                    exact_match = None
+                    for todo in todos:
+                        if todo.title.lower() == title.lower():
+                            exact_match = todo
+                            break
+
+                    if exact_match:
+                        # Use the exact match
+                        todo = exact_match
+                    elif len(todos) == 1:
+                        # If only one similar match, use it
+                        todo = todos[0]
+                    else:
+                        # If multiple matches, ask for clarification
+                        todo_titles = [f"'{todo.title}'" for todo in todos[:5]]  # Limit to first 5
+                        titles_str = ", ".join(todo_titles)
+                        return f"I found multiple recurring tasks with similar titles: {titles_str}. Could you please specify which one you mean?", "disambiguation_needed", None
+
+                    try:
+                        result = TodoMCPTools.cancel_recurring_series(str(todo.id), str(user_id))
+                        if result['success']:
+                            return response_text, "recurring_task_cancelled", {
+                                "id": str(todo.id),
+                                "title": todo.title
+                            }
+                        else:
+                            return f"I couldn't cancel the recurring task '{title}'.", "error", None
+                    except Exception:
+                        return "Sorry, I'm having trouble connecting to the todo service right now. Please try again later.", "service_unavailable", None
+                else:
+                    return f"I couldn't find a recurring task with the title '{title}'.", "error", None
+            else:
+                return "I couldn't understand which recurring task to cancel. Please specify the title.", "error", None
 
         elif action == "complete_todo":
             if title:
@@ -401,6 +553,60 @@ def process_natural_language_command(message: str, session: Session, conversatio
             else:
                 return response_text, "show_todos", {"todos": []}
 
+        elif action == "search_todos":
+            keyword = title  # Using title field to pass the search keyword
+            if keyword:
+                try:
+                    todos = TodoMCPTools.search_todos(str(user_id), keyword)
+                    if todos:
+                        todo_list = [f"- {todo['title']} ({todo['status']})" for todo in todos]
+                        todo_str = "\n".join(todo_list)
+                        return response_text, "search_results", {
+                            "todos": todos
+                        }
+                    else:
+                        return f"I couldn't find any todos matching '{keyword}'.", "search_results", {"todos": []}
+                except Exception:
+                    return "Sorry, I'm having trouble connecting to the todo service right now. Please try again later.", "service_unavailable", None
+            else:
+                return "I couldn't understand what to search for. Please specify a keyword.", "error", None
+
+        elif action == "filter_todos":
+            # Extract filter parameters from the parsed response
+            status = parsed_response.get("status")
+            priority = parsed_response.get("priority")
+            tags = parsed_response.get("tags", [])
+
+            try:
+                todos = TodoMCPTools.filter_todos(str(user_id), status, priority, tags)
+                if todos:
+                    todo_list = [f"- {todo['title']} ({todo['status']})" for todo in todos]
+                    todo_str = "\n".join(todo_list)
+                    return response_text, "filter_results", {
+                        "todos": todos
+                    }
+                else:
+                    return "I couldn't find any todos matching your filters.", "filter_results", {"todos": []}
+            except Exception:
+                return "Sorry, I'm having trouble connecting to the todo service right now. Please try again later.", "service_unavailable", None
+
+        elif action == "sort_todos":
+            sort_by = parsed_response.get("sort_by", "created_at")
+            sort_order = parsed_response.get("sort_order", "desc")
+
+            try:
+                todos = TodoMCPTools.sort_todos(str(user_id), sort_by, sort_order)
+                if todos:
+                    todo_list = [f"- {todo['title']} ({todo['status']})" for todo in todos]
+                    todo_str = "\n".join(todo_list)
+                    return response_text, "sort_results", {
+                        "todos": todos
+                    }
+                else:
+                    return "You don't have any todos to sort.", "sort_results", {"todos": []}
+            except Exception:
+                return "Sorry, I'm having trouble connecting to the todo service right now. Please try again later.", "service_unavailable", None
+
         else:
             # For unknown commands or other actions
             return response_text, action, None
@@ -425,8 +631,9 @@ def process_natural_language_command_fallback(message: str, session: Session, co
     message = message.strip().lower()
 
     # Pattern matching for different commands
-    # Add todo: "add a todo: [title]" or "create todo: [title]" or "add todo [title]"
-    add_todo_pattern = r"(add a todo:|create todo:|add todo)\s*(.+)"
+    # Add todo: "add a todo: [title]", "create todo: [title]", "add todo [title]", or just "add [title]"
+    # More flexible pattern to match variations like "add buy groceries"
+    add_todo_pattern = r"(add a todo:|create todo:|add todo:|add todo\s+|create todo\s+|add\s+)(.+)"
     match = re.match(add_todo_pattern, message)
     if match:
         title = match.group(2).strip()
@@ -443,9 +650,31 @@ def process_natural_language_command_fallback(message: str, session: Session, co
                     "status": todo['status']
                 }
             except Exception as e:
+                print(f"Error creating todo: {str(e)}")  # Add logging for debugging
                 return "Sorry, I'm having trouble connecting to the todo service right now. Please try again later.", "service_unavailable", None
         else:
             return "I couldn't understand the todo title. Please try again.", "error", None
+
+    # Additional pattern for simple "add [title]" format
+    simple_add_pattern = r"^add\s+(.+)$"
+    match = re.match(simple_add_pattern, message)
+    if match and not match.group(1).startswith("a ") and not match.group(1).startswith("todo"):
+        title = match.group(1).strip()
+        if title:
+            try:
+                # Create the todo
+                todo = TodoMCPTools.create_todo(
+                    title=title,
+                    user_id=str(user_id)  # Use the actual user ID from the session
+                )
+                return f"I've added '{todo['title']}' to your todo list.", "todo_created", {
+                    "id": todo['id'],
+                    "title": todo['title'],
+                    "status": todo['status']
+                }
+            except Exception as e:
+                print(f"Error creating todo: {str(e)}")  # Add logging for debugging
+                return "Sorry, I'm having trouble connecting to the todo service right now. Please try again later.", "service_unavailable", None
 
     # Mark todo as complete: "mark '[title]' as complete" or "complete '[title]'"
     mark_complete_pattern = r"(mark|complete)\s*'([^']+)'\s*(as complete)?"

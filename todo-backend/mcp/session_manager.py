@@ -4,9 +4,9 @@ Conversation session management for maintaining context between sessions.
 from typing import Optional, Dict, Any
 from uuid import UUID
 from datetime import datetime, timedelta
-from todo_backend.services.conversation_service import ConversationService
-from todo_backend.services.message_service import MessageService
-from todo_backend.database import get_session
+from services.conversation_service import ConversationService
+from services.message_service import MessageService
+from database import get_session
 from sqlmodel import Session
 
 

@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  # Dapr sidecar for backend
+  dapr-backend:
+    image: "daprio/daprd:1.12"
+    command: ["daprd", 
+              "-app-id", "todo-backend", 
+              "-app-port", "8000", 
+              "-dapr-grpc-port", "50001", 
+              "-dapr-http-port", "3501",
+              "-placement-host-address", "placement:50006"]
+    depends_on:
+      - placement
+      - redis
+      - kafka
+    network_mode: "service:backend"
+    dind:
+      privileged: true
+
+  # Backend service
+  backend:
+    build:
+      context: ../todo-backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://neondb_owner:npg_ywfK5ROea2kh@ep-hidden-paper-adebc1e9-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+      - GEMINI_API_KEY=AIzaSyA5R-C3lTFzBTRomw8tu8rDoev7FFyL1rA
+      - SECRET_KEY=IOoF2Js0vpK6zYcbWtQng81DhRHMUdSk
+      - BETTER_AUTH_SECRET=your_better_auth_secret_here
+      - DAPR_SIDECAR_HOST=localhost
+      - DAPR_SIDECAR_PORT=3501
+      - DAPR_HTTP_ENDPOINT=http://localhost:3501
+      - DAPR_STATE_STORE_NAME=todo-statestore
+      - DAPR_PUBSUB_NAME=todo-pubsub
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_TASK_EVENTS_TOPIC=task-events
+      - KAFKA_REMINDERS_TOPIC=reminders
+      - KAFKA_TASK_UPDATES_TOPIC=task-updates
+      - REMINDER_CHECK_INTERVAL_MINUTES=5
+    depends_on:
+      - kafka
+      - redis
+
+  # Dapr sidecar for frontend
+  dapr-frontend:
+    image: "daprio/daprd:1.12"
+    command: ["daprd", 
+              "-app-id", "todo-frontend", 
+              "-app-port", "3000", 
+              "-dapr-grpc-port", "50002", 
+              "-dapr-http-port", "3502",
+              "-placement-host-address", "placement:50006"]
+    depends_on:
+      - placement
+    network_mode: "service:frontend"
+    dind:
+      privileged: true
+
+  # Frontend service
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+      - DAPR_SIDECAR_HOST=localhost
+      - DAPR_SIDECAR_PORT=3502
+    depends_on:
+      - backend
+
+  # Kafka for event streaming
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  # Redis for Dapr state store
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  # Dapr placement service
+  placement:
+    image: "daprio/placement:1.12"
+    ports:
+      - "50006:50006"
+    command: ["./placement", "-port", "50006"]
+
+  # Dapr Redis state store component
+  dapr-redis:
+    image: "redis:alpine"
+    ports:
+      - "6380:6379"

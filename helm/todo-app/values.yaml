@@ -1,0 +1,88 @@
+# Default values for todo-app
+
+# Configuration for the todo-backend subchart
+todo-backend:
+  replicaCount: 1
+  image:
+    repository: todo-backend
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  service:
+    type: ClusterIP
+    port: 8000
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  dapr:
+    enabled: true
+    appId: "todo-backend"
+    appPort: 8000
+    config: "dapr-config"
+
+# Configuration for the todo-frontend subchart
+todo-frontend:
+  replicaCount: 1
+  image:
+    repository: todo-frontend
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  service:
+    type: LoadBalancer
+    port: 3000
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Dapr configuration
+dapr:
+  enabled: true
+  components:
+    pubsub:
+      type: pubsub.kafka
+      version: v1
+      metadata:
+        - name: brokers
+          value: "kafka:9092"
+        - name: consumerGroup
+          value: "todo-consumer-group"
+        - name: disableTls
+          value: "true"
+    statestore:
+      type: state.redis
+      version: v1
+      metadata:
+        - name: redisHost
+          value: "redis-master:6379"
+        - name: redisPassword
+          value: ""
+    secrets:
+      type: secretstores.kubernetes
+      version: v1
+      metadata: []
+
+# Kafka configuration
+kafka:
+  enabled: true
+  replicaCount: 1
+  auth:
+    enabled: false
+  persistence:
+    enabled: false

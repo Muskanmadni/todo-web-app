@@ -3,7 +3,7 @@ from typing import Optional, List
 from enum import Enum
 import uuid
 from sqlmodel import SQLModel, Field, create_engine, Session, select
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from contextlib import contextmanager
@@ -13,6 +13,9 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 from fastapi.middleware.cors import CORSMiddleware
 from api.chatbot import router as chatbot_router
+from api.recurring_tasks import router as recurring_tasks_router
+from api.reminders import router as reminders_router
+from events.consumer import EventConsumer
 
 # Import models from models directory
 from models.user import User as UserModel
@@ -170,7 +173,315 @@ def authenticate_user(email: str, password: str) -> Optional[UserModel]:
 # Create tables
 @app.on_event("startup")
 def on_startup():
+    # Import here to avoid circular imports
+    from database import engine
+    from sqlmodel import SQLModel
+    from sqlalchemy import text
+    import time
+
+    # Attempt to run alembic migrations to update the schema
+    # If that fails, try direct schema updates for missing columns
+    try:
+        import subprocess
+        import sys
+        import os
+        original_cwd = os.getcwd()
+        os.chdir('/app')  # Change to app directory where alembic.ini is located
+
+        # Run alembic upgrade to head to apply all pending migrations
+        result = subprocess.run([sys.executable, '-m', 'alembic', 'upgrade', 'head'],
+                              capture_output=True, text=True)
+        if result.returncode != 0:
+            print(f"Alembic migration failed: {result.stderr}")
+            print("Attempting direct schema updates...")
+
+            # Direct schema update for missing columns
+            with engine.connect() as conn:
+                # Check and add missing columns to users table
+                # Check if timezone column exists in users table
+                tz_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'users' AND column_name = 'timezone'
+                """)).fetchone()
+
+                if not tz_result:
+                    # Add timezone column with default value
+                    conn.execute(text("ALTER TABLE users ADD COLUMN timezone VARCHAR(50) DEFAULT 'UTC'"))
+                    print("Added timezone column to users table")
+
+                # Check if reminder_preferences column exists in users table
+                rp_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'users' AND column_name = 'reminder_preferences'
+                """)).fetchone()
+
+                if not rp_result:
+                    # Add reminder_preferences column
+                    conn.execute(text("ALTER TABLE users ADD COLUMN reminder_preferences JSON"))
+                    print("Added reminder_preferences column to users table")
+
+                # Check and add missing columns to todos table
+                # Check if priority column exists in todos table
+                priority_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'priority'
+                """)).fetchone()
+
+                if not priority_result:
+                    # Add priority column with default value
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN priority VARCHAR(20) DEFAULT 'medium'"))
+                    print("Added priority column to todos table")
+
+                # Check if tags column exists in todos table
+                tags_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'tags'
+                """)).fetchone()
+
+                if not tags_result:
+                    # Add tags column
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN tags JSON"))
+                    print("Added tags column to todos table")
+
+                # Check if due_date column exists in todos table
+                due_date_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'due_date'
+                """)).fetchone()
+
+                if not due_date_result:
+                    # Add due_date column
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN due_date TIMESTAMP"))
+                    print("Added due_date column to todos table")
+
+                # Check if recurrence_pattern column exists in todos table
+                recurrence_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'recurrence_pattern'
+                """)).fetchone()
+
+                if not recurrence_result:
+                    # Add recurrence_pattern column
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN recurrence_pattern TEXT"))
+                    print("Added recurrence_pattern column to todos table")
+
+                # Check if next_occurrence_date column exists in todos table
+                next_occurrence_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'next_occurrence_date'
+                """)).fetchone()
+
+                if not next_occurrence_result:
+                    # Add next_occurrence_date column
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN next_occurrence_date TIMESTAMP"))
+                    print("Added next_occurrence_date column to todos table")
+
+                conn.commit()
+        else:
+            print("Alembic migrations applied successfully")
+    except FileNotFoundError:
+        print("Alembic not found, skipping migrations. Proceeding with direct schema updates...")
+        # If alembic is not available, proceed with direct schema updates
+        try:
+            with engine.connect() as conn:
+                # Check and add missing columns to users table
+                # Check if timezone column exists in users table
+                tz_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'users' AND column_name = 'timezone'
+                """)).fetchone()
+
+                if not tz_result:
+                    # Add timezone column with default value
+                    conn.execute(text("ALTER TABLE users ADD COLUMN timezone VARCHAR(50) DEFAULT 'UTC'"))
+                    print("Added timezone column to users table")
+
+                # Check if reminder_preferences column exists in users table
+                rp_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'users' AND column_name = 'reminder_preferences'
+                """)).fetchone()
+
+                if not rp_result:
+                    # Add reminder_preferences column
+                    conn.execute(text("ALTER TABLE users ADD COLUMN reminder_preferences JSON"))
+                    print("Added reminder_preferences column to users table")
+
+                # Check and add missing columns to todos table
+                # Check if priority column exists in todos table
+                priority_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'priority'
+                """)).fetchone()
+
+                if not priority_result:
+                    # Add priority column with default value
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN priority VARCHAR(20) DEFAULT 'medium'"))
+                    print("Added priority column to todos table")
+
+                # Check if tags column exists in todos table
+                tags_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'tags'
+                """)).fetchone()
+
+                if not tags_result:
+                    # Add tags column
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN tags JSON"))
+                    print("Added tags column to todos table")
+
+                # Check if due_date column exists in todos table
+                due_date_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'due_date'
+                """)).fetchone()
+
+                if not due_date_result:
+                    # Add due_date column
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN due_date TIMESTAMP"))
+                    print("Added due_date column to todos table")
+
+                # Check if recurrence_pattern column exists in todos table
+                recurrence_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'recurrence_pattern'
+                """)).fetchone()
+
+                if not recurrence_result:
+                    # Add recurrence_pattern column
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN recurrence_pattern TEXT"))
+                    print("Added recurrence_pattern column to todos table")
+
+                # Check if next_occurrence_date column exists in todos table
+                next_occurrence_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'next_occurrence_date'
+                """)).fetchone()
+
+                if not next_occurrence_result:
+                    # Add next_occurrence_date column
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN next_occurrence_date TIMESTAMP"))
+                    print("Added next_occurrence_date column to todos table")
+
+                conn.commit()
+        except Exception as e2:
+            print(f"Direct schema update failed: {e2}")
+    except Exception as e:
+        print(f"Error running alembic migrations: {e}")
+        # Fallback: try direct schema updates
+        try:
+            with engine.connect() as conn:
+                # Check and add missing columns to users table
+                # Check if timezone column exists in users table
+                tz_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'users' AND column_name = 'timezone'
+                """)).fetchone()
+
+                if not tz_result:
+                    # Add timezone column with default value
+                    conn.execute(text("ALTER TABLE users ADD COLUMN timezone VARCHAR(50) DEFAULT 'UTC'"))
+                    print("Added timezone column to users table")
+
+                # Check if reminder_preferences column exists in users table
+                rp_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'users' AND column_name = 'reminder_preferences'
+                """)).fetchone()
+
+                if not rp_result:
+                    # Add reminder_preferences column
+                    conn.execute(text("ALTER TABLE users ADD COLUMN reminder_preferences JSON"))
+                    print("Added reminder_preferences column to users table")
+
+                # Check and add missing columns to todos table
+                # Check if priority column exists in todos table
+                priority_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'priority'
+                """)).fetchone()
+
+                if not priority_result:
+                    # Add priority column with default value
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN priority VARCHAR(20) DEFAULT 'medium'"))
+                    print("Added priority column to todos table")
+
+                # Check if tags column exists in todos table
+                tags_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'tags'
+                """)).fetchone()
+
+                if not tags_result:
+                    # Add tags column
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN tags JSON"))
+                    print("Added tags column to todos table")
+
+                # Check if due_date column exists in todos table
+                due_date_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'due_date'
+                """)).fetchone()
+
+                if not due_date_result:
+                    # Add due_date column
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN due_date TIMESTAMP"))
+                    print("Added due_date column to todos table")
+
+                # Check if recurrence_pattern column exists in todos table
+                recurrence_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'recurrence_pattern'
+                """)).fetchone()
+
+                if not recurrence_result:
+                    # Add recurrence_pattern column
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN recurrence_pattern TEXT"))
+                    print("Added recurrence_pattern column to todos table")
+
+                # Check if next_occurrence_date column exists in todos table
+                next_occurrence_result = conn.execute(text("""
+                    SELECT column_name
+                    FROM information_schema.columns
+                    WHERE table_name = 'todos' AND column_name = 'next_occurrence_date'
+                """)).fetchone()
+
+                if not next_occurrence_result:
+                    # Add next_occurrence_date column
+                    conn.execute(text("ALTER TABLE todos ADD COLUMN next_occurrence_date TIMESTAMP"))
+                    print("Added next_occurrence_date column to todos table")
+
+                conn.commit()
+        except Exception as e2:
+            print(f"Fallback schema update also failed: {e2}")
+    finally:
+        os.chdir(original_cwd)  # Restore original working directory
+
+    # Create all tables (this won't hurt and ensures any remaining tables are created)
     SQLModel.metadata.create_all(bind=engine)
+
+    # Give a little time for schema changes to propagate
+    time.sleep(1)
 
 # Authentication endpoints
 @app.post("/auth/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
@@ -335,6 +646,45 @@ def delete_task(task_id: uuid.UUID, current_user: UserModel = Depends(get_curren
 
 # Include chatbot router
 app.include_router(chatbot_router, prefix="", tags=["chat"])
+
+# Include recurring tasks router
+app.include_router(recurring_tasks_router, prefix="", tags=["recurring-tasks"])
+
+# Include reminders router
+app.include_router(reminders_router, prefix="", tags=["reminders"])
+
+# Dapr subscription endpoint for pub/sub
+@app.post("/dapr/subscribe")
+async def dapr_subscribe():
+    """
+    Dapr subscription endpoint to define which topics this service wants to subscribe to.
+    """
+    subscriptions = [
+        {
+            "pubsubname": "todo-pubsub",  # This should match the pubsub component name
+            "topic": "task-events",
+            "route": "/events/task"
+        },
+        {
+            "pubsubname": "todo-pubsub",
+            "topic": "reminders",
+            "route": "/events/reminders"
+        },
+        {
+            "pubsubname": "todo-pubsub",
+            "topic": "recurring-tasks",
+            "route": "/events/recurring-tasks"
+        }
+    ]
+    return subscriptions
+
+# Endpoint to handle incoming events from Dapr pub/sub
+@app.post("/events/{topic}")
+async def handle_topic_event(topic: str, request: Request):
+    """
+    Handle events from Dapr pub/sub for different topics.
+    """
+    return await EventConsumer.handle_dapr_subscription(request)
 
 # Health check endpoint
 @app.get("/health")

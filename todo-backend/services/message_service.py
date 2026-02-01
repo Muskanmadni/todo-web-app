@@ -2,11 +2,7 @@ from sqlmodel import Session, select
 from typing import List, Optional
 from uuid import UUID
 from datetime import datetime
-try:
-    from ..models.message import Message
-except (ImportError, ValueError):
-    # Fallback for when module is run directly
-    from models.message import Message
+from models.message import Message
 
 
 class MessageService:
