@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: todo-app
   labels:
-    name: todo-app
+    dapr.io/inject: "enabled"

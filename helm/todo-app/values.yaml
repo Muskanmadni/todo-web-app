@@ -56,23 +56,13 @@ dapr:
   enabled: true
   components:
     pubsub:
-      type: pubsub.kafka
+      type: pubsub.in-memory
       version: v1
-      metadata:
-        - name: brokers
-          value: "kafka:9092"
-        - name: consumerGroup
-          value: "todo-consumer-group"
-        - name: disableTls
-          value: "true"
+      metadata: []
     statestore:
-      type: state.redis
+      type: state.in-memory
       version: v1
-      metadata:
-        - name: redisHost
-          value: "redis-master:6379"
-        - name: redisPassword
-          value: ""
+      metadata: []
     secrets:
       type: secretstores.kubernetes
       version: v1
@@ -80,7 +70,7 @@ dapr:
 
 # Kafka configuration
 kafka:
-  enabled: true
+  enabled: false
   replicaCount: 1
   auth:
     enabled: false

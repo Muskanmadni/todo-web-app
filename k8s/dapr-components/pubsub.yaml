@@ -4,14 +4,6 @@ metadata:
   name: todo-pubsub
   namespace: todo-app
 spec:
-  type: pubsub.kafka
+  type: pubsub.in-memory
   version: v1
-  metadata:
-  - name: brokers
-    value: "kafka:9092"
-  - name: consumerGroup
-    value: "todo-consumer-group"
-  - name: disableTls
-    value: "true"
-  - name: authRequired
-    value: "false"
+  metadata: []

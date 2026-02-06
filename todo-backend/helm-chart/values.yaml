@@ -5,12 +5,13 @@
 replicaCount: 1
 
 image:
-  repository: todo-backend
+  repository: todoappregistry2026.azurecr.io/todo-backend
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "latest"
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: acr-image-pull-secret
 nameOverride: ""
 fullnameOverride: ""
 
@@ -22,6 +23,8 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+  # Automount API credentials for the Service Account
+  automount: true
 
 podAnnotations: {}
 

@@ -99,9 +99,9 @@ export default function ChatbotPage() {
     );
   }
 
-  // If not logged in, redirect to home
+  // If not logged in, redirect to login page
   if (!isLoggedIn) {
-    router.push('/');
+    router.push('/login');
     return null;
   }
 

@@ -1,0 +1,9 @@
+dependencies:
+- name: todo-backend
+  repository: file://../../todo-backend/helm-chart
+  version: 0.1.0
+- name: todo-frontend
+  repository: file://../../todo-frontend/helm-chart
+  version: 0.1.0
+digest: sha256:7082db13753d0308c45a921323bafba4f5159988a5d8708eae29daf93b1cec0e
+generated: "2026-02-04T12:55:23.7867997+05:00"

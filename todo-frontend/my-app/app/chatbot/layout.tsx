@@ -20,7 +20,7 @@ const ChatLayout = ({ children }: { children: React.ReactNode }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
-    router.push('/');
+    router.push('/login');
   };
 
   return (
